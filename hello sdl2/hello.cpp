@@ -3,19 +3,19 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include <string>
-#include <filesystem>
+#include <vector>
 #include "globals.h"
 #include "Texture.h"
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
 //Current displayed image
-SDL_Texture* gCurrentTexture = NULL;
 
-LTexture gFooTexture;
-LTexture gBackgroundTexture;
+LTexture gSpriteSheetTexture;
+std::vector<std::pair<SDL_FRect, SDL_FRect>> gSpriteClips({
+    {SDL_FRect{0, 0, 0, 0}, SDL_FRect{ 0, 0, 100, 100 }},
+    {SDL_FRect{640-100, 0, 0, 0}, SDL_FRect{ 100, 0, 100, 100 } },
+    {SDL_FRect{0, 480-100,0,0}, SDL_FRect{ 0, 100, 100, 100 }},
+    {SDL_FRect{640-100, 480-100,0,0}, SDL_FRect{ 100, 100, 100, 100 }},
+});
 
 // Initialize SDL, window, and renderer
 bool initialise() {
@@ -38,27 +38,17 @@ bool load_media() {
     bool success = true;
 
     //Load Foo' texture
-    if( !gFooTexture.loadFromFile( "foo.png" ) )
+    if( !gSpriteSheetTexture.loadFromFile( "sprites.png" ) )
     {
-        printf( "Failed to load Foo' texture image!\n" );
+        printf( "Failed to load sprites.png\n" );
         success = false;
     }
-    
-    //Load background texture
-        if( !gBackgroundTexture.loadFromFile( "background.png" ) )
-        {
-            printf( "Failed to load background texture image!\n" );
-            success = false;
-        }
 
     return success;
 }
 
 // Free resources and quit SDL
 void close() {
-//    gFooTexture.free();
-//    gBackgroundTexture.free();
-
     if (Globals::getRenderer()) {
         SDL_DestroyRenderer(Globals::getRenderer());
     }
@@ -81,8 +71,6 @@ int main(int argc, char* args[]) {
     SDL_SetRenderDrawColor(Globals::getInstance().getRenderer(), 255, 255, 255, 255);
     SDL_RenderClear(Globals::getInstance().getRenderer());
 
-    // Draw the texture
-//    gCurrentTexture = gKeyPressSurfaces[KEY_PRESS_SURFACE_DEFAULT];
     
     bool quit = false;
     SDL_Event e;
@@ -96,11 +84,9 @@ int main(int argc, char* args[]) {
                 SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );
                 SDL_RenderClear( Globals::getRenderer() );
 
-                //Render background texture to screen
-                gBackgroundTexture.render( 0, 0 );
-
-                //Render Foo' to the screen
-                gFooTexture.render( 240, 190 );
+                for (const auto& rect : gSpriteClips) {
+                    gSpriteSheetTexture.render(rect.first.x, rect.first.y, &rect.second);
+                }
 
                 //Update screen
                 SDL_RenderPresent( Globals::getRenderer() );

@@ -28,7 +28,8 @@ bool LTexture::loadFromFile(const std::string& file_name) {
         SDL_LogError(SDL_LOG_CATEGORY_RENDER, "path: %s is invalid", path.c_str());
     }
 
-    //Color key image - this makes it transparent
+    //Color key image - we can specify a color, all pixels of that color will be treated as transparent
+    // map surface rgb creates a pixel
     SDL_SetSurfaceColorKey( loadedSurface, true, SDL_MapSurfaceRGB( loadedSurface, 0, 0xFF, 0xFF ) );
     // Create texture from surface
     newTexture = SDL_CreateTextureFromSurface(Globals::getRenderer(), loadedSurface);
@@ -43,11 +44,15 @@ bool LTexture::loadFromFile(const std::string& file_name) {
     return mTexture != NULL;
 }
 
-void LTexture::render( float x, float y )
+void LTexture::render( float x, float y, const SDL_FRect* clip)
 {
     //Set rendering space and render to screen
     SDL_FRect renderQuad = { x, y, mWidth, mHeight };
-    SDL_RenderTexture( Globals::getInstance().getRenderer(), mTexture, NULL, &renderQuad );
+    if (clip != NULL) {
+        renderQuad.w = clip-> w;
+        renderQuad.h = clip->h;
+    }
+    SDL_RenderTexture( Globals::getInstance().getRenderer(), mTexture, clip, &renderQuad );
 }
 
 float LTexture::getWidth() const

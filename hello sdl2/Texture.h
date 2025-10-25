@@ -27,7 +27,7 @@ class LTexture
 //        void free();
 
         //Renders texture at given point
-        void render( float x, float y );
+        void render( float x, float y, const SDL_FRect* clip = NULL );
 
         //Gets image dimensions
         float getWidth() const;
