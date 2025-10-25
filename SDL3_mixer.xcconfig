@@ -1,0 +1,1 @@
+HEADER_SEARCH_PATHS = $(HOME)/install/include/SDL3_mixer/

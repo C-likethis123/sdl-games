@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		202062732EAB68640061809D /* SDL3.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 202062722EAB68640061809D /* SDL3.xcframework */; };
 		202062742EAB68640061809D /* SDL3.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 202062722EAB68640061809D /* SDL3.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		202062912EAC455A0061809D /* SDL3_image.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 202062902EAC455A0061809D /* SDL3_image.xcframework */; };
+		202062922EAC455A0061809D /* SDL3_image.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 202062902EAC455A0061809D /* SDL3_image.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		202062952EAC73510061809D /* SDL3_ttf.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 202062942EAC73510061809D /* SDL3_ttf.xcframework */; };
+		202062962EAC73510061809D /* SDL3_ttf.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 202062942EAC73510061809D /* SDL3_ttf.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2020629D2EAC85A10061809D /* SDL3_mixer.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2020629B2EAC7C880061809D /* SDL3_mixer.xcconfig */; };
+		20F529972EAC9B1A003B40A8 /* libSDL3_mixer.0.1.0.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 20F529932EAC94DC003B40A8 /* libSDL3_mixer.0.1.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		20F5299E2EAC9E90003B40A8 /* libSDL3_mixer.0.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F5299C2EAC9D03003B40A8 /* libSDL3_mixer.0.1.0.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -18,7 +25,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				20F529972EAC9B1A003B40A8 /* libSDL3_mixer.0.1.0.dylib in Embed Frameworks */,
+				202062962EAC73510061809D /* SDL3_ttf.xcframework in Embed Frameworks */,
 				202062742EAB68640061809D /* SDL3.xcframework in Embed Frameworks */,
+				202062922EAC455A0061809D /* SDL3_image.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -28,6 +38,13 @@
 /* Begin PBXFileReference section */
 		202062502EAB667D0061809D /* hello sdl2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hello sdl2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		202062722EAB68640061809D /* SDL3.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = SDL3.xcframework; sourceTree = "<group>"; };
+		202062902EAC455A0061809D /* SDL3_image.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = SDL3_image.xcframework; sourceTree = "<group>"; };
+		202062942EAC73510061809D /* SDL3_ttf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = SDL3_ttf.xcframework; sourceTree = "<group>"; };
+		202062982EAC750F0061809D /* libSDL3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libSDL3.0.dylib; sourceTree = "<group>"; };
+		2020629B2EAC7C880061809D /* SDL3_mixer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SDL3_mixer.xcconfig; sourceTree = "<group>"; };
+		20F529932EAC94DC003B40A8 /* libSDL3_mixer.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_mixer.0.1.0.dylib; path = ../install/lib/libSDL3_mixer.0.1.0.dylib; sourceTree = "<group>"; };
+		20F5299B2EAC9CDF003B40A8 /* libSDL3_mixer.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_mixer.0.1.0.dylib; path = ../install/lib/libSDL3_mixer.0.1.0.dylib; sourceTree = "<group>"; };
+		20F5299C2EAC9D03003B40A8 /* libSDL3_mixer.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_mixer.0.1.0.dylib; path = ../install/lib/libSDL3_mixer.0.1.0.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,7 +60,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20F5299E2EAC9E90003B40A8 /* libSDL3_mixer.0.1.0.dylib in Frameworks */,
+				202062952EAC73510061809D /* SDL3_ttf.xcframework in Frameworks */,
 				202062732EAB68640061809D /* SDL3.xcframework in Frameworks */,
+				202062912EAC455A0061809D /* SDL3_image.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +73,10 @@
 		202062472EAB667D0061809D = {
 			isa = PBXGroup;
 			children = (
+				20F5299B2EAC9CDF003B40A8 /* libSDL3_mixer.0.1.0.dylib */,
+				20F5299C2EAC9D03003B40A8 /* libSDL3_mixer.0.1.0.dylib */,
+				2020629B2EAC7C880061809D /* SDL3_mixer.xcconfig */,
+				202062982EAC750F0061809D /* libSDL3.0.dylib */,
 				202062522EAB667D0061809D /* hello sdl2 */,
 				202062712EAB68630061809D /* Frameworks */,
 				202062512EAB667D0061809D /* Products */,
@@ -70,6 +94,9 @@
 		202062712EAB68630061809D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				20F529932EAC94DC003B40A8 /* libSDL3_mixer.0.1.0.dylib */,
+				202062942EAC73510061809D /* SDL3_ttf.xcframework */,
+				202062902EAC455A0061809D /* SDL3_image.xcframework */,
 				202062722EAB68640061809D /* SDL3.xcframework */,
 			);
 			name = Frameworks;
@@ -140,6 +167,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2020629D2EAC85A10061809D /* SDL3_mixer.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,6 +186,7 @@
 /* Begin XCBuildConfiguration section */
 		2020625E2EAB66800061809D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2020629B2EAC7C880061809D /* SDL3_mixer.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -208,17 +237,26 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = $HOME/install/include/SDL3_mixer/;
+				LIBRARY_SEARCH_PATHS = $HOME/install/lib/;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I/Users/chowjiaying/install/include",
+				);
+				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
+				USE_HEADERMAP = NO;
 			};
 			name = Debug;
 		};
 		2020625F2EAB66800061809D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2020629B2EAC7C880061809D /* SDL3_mixer.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -263,11 +301,19 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = $HOME/install/include/SDL3_mixer/;
+				LIBRARY_SEARCH_PATHS = $HOME/install/lib/;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I/Users/chowjiaying/install/include",
+				);
+				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
+				USE_HEADERMAP = NO;
 			};
 			name = Release;
 		};
@@ -282,6 +328,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -289,7 +336,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = $HOME/install/lib/;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.whatever.hello-sdl2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -309,6 +358,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -316,7 +366,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = $HOME/install/lib/;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.whatever.hello-sdl2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -334,7 +386,7 @@
 				2020625F2EAB66800061809D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		202062602EAB66800061809D /* Build configuration list for PBXNativeTarget "hello sdl2" */ = {
 			isa = XCConfigurationList;
@@ -343,7 +395,7 @@
 				202062622EAB66800061809D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
