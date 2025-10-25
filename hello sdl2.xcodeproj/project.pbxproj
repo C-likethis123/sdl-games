@@ -47,9 +47,22 @@
 		20F5299C2EAC9D03003B40A8 /* libSDL3_mixer.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_mixer.0.1.0.dylib; path = ../install/lib/libSDL3_mixer.0.1.0.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		20F529A32EACB47B003B40A8 /* Exceptions for "hello sdl2" folder in "Compile Sources" phase from "hello sdl2" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 2020624C2EAB667D0061809D /* Sources */;
+			membershipExceptions = (
+				Texture.h,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		202062522EAB667D0061809D /* hello sdl2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				20F529A32EACB47B003B40A8 /* Exceptions for "hello sdl2" folder in "Compile Sources" phase from "hello sdl2" target */,
+			);
 			path = "hello sdl2";
 			sourceTree = "<group>";
 		};
