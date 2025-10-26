@@ -91,7 +91,7 @@ bool LTexture::loadFromFile(const std::string& file_name) {
     return true;
 }
 
-void LTexture::render(float x, float y, const SDL_FRect* clip) const
+void LTexture::render(float x, float y, const SDL_FRect* clip, double angle, SDL_FPoint* center, SDL_FlipMode flip) const
 {
     if (!mTexture) {
         SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "Attempted to render null texture");
@@ -113,8 +113,8 @@ void LTexture::render(float x, float y, const SDL_FRect* clip) const
         renderQuad.h = clip->h;
     }
     
-    if (!SDL_RenderTexture(renderer, mTexture.get(), clip, &renderQuad)) {
-        SDL_LogError(SDL_LOG_CATEGORY_RENDER, 
+    if (!SDL_RenderTextureRotated(renderer, mTexture.get(), clip, &renderQuad, angle, center, flip)) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER,
                     "Failed to render texture! SDL Error: %s", SDL_GetError());
     }
 }

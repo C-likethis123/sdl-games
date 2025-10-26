@@ -39,6 +39,8 @@ bool Globals::initialise() {
         SDL_DestroyWindow(tempWindow);
         return false;
     }
+    // somehow SDL does not have a SDL_RENDERER_VSYNC flag that enables vsync.
+    SDL_SetRenderVSync(tempRenderer, 1);
     
     getInstance().gWindow.reset(tempWindow);
     getInstance().gRenderer.reset(tempRenderer);

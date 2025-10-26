@@ -39,7 +39,7 @@ class LTexture
 
         // Renders texture at given point
         // If clip is provided, only that portion of the texture is rendered
-        void render(float x, float y, const SDL_FRect* clip = nullptr) const;
+        void render(float x, float y, const SDL_FRect* clip = nullptr, double angle = 0.0, SDL_FPoint* center = nullptr, SDL_FlipMode flip = SDL_FLIP_NONE) const;
 
         // Gets image dimensions
         [[nodiscard]] float getWidth() const noexcept;
