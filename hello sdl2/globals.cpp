@@ -18,6 +18,34 @@ Globals& Globals::getInstance() {
     return instance;
 }
 
+bool Globals::initialise() {
+    // Create window with specific flags
+    SDL_Window* tempWindow = SDL_CreateWindow(
+        "Mai Tutorial", 640, 480, 0);
+    
+    if (!tempWindow) {
+        SDL_Log("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        return false;
+    }
+    
+    // Create renderer with hardware acceleration and vsync
+    SDL_Renderer* tempRenderer = SDL_CreateRenderer(
+        tempWindow,
+        nullptr
+    );
+    
+    if (!tempRenderer) {
+        SDL_Log("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_DestroyWindow(tempWindow);
+        return false;
+    }
+    
+    getInstance().gWindow.reset(tempWindow);
+    getInstance().gRenderer.reset(tempRenderer);
+
+    return true;
+}
+
 // Get the base path (initializes on first call)
 const char* Globals::getBasePath() {
     if (!basePath) {
@@ -27,11 +55,22 @@ const char* Globals::getBasePath() {
 }
 
 SDL_Window* Globals::getWindow(){
-    return getInstance().gWindow;
+    return getInstance().gWindow.get();
 }
 
 SDL_Renderer* Globals::getRenderer() {
-    return getInstance().gRenderer;
+    return getInstance().gRenderer.get();
+}
+
+bool Globals::getRenderOutputSize(int* width, int* height) {
+    return SDL_GetCurrentRenderOutputSize(getRenderer(), width, height);
+}
+
+void Globals::cleanup() {
+    // Reset unique_ptrs to trigger cleanup in proper order
+    // (Renderer first, then Window, before SDL_Quit is called)
+    getInstance().gRenderer.reset();
+    getInstance().gWindow.reset();
 }
 
 // Helper to get full resource path

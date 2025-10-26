@@ -10,62 +10,128 @@
 #include <SDL3_image/SDL_image.h>
 #include <filesystem>
 
+namespace {
+    // Custom deleter for SDL_Surface RAII
+    struct SDL_SurfaceDeleter {
+        void operator()(SDL_Surface* surface) const {
+            if (surface) {
+                SDL_DestroySurface(surface);
+            }
+        }
+    };
+    
+    // Color key for transparency (cyan: R=0, G=255, B=255)
+    constexpr Uint8 COLOR_KEY_R = 0x00;
+    constexpr Uint8 COLOR_KEY_G = 0xFF;
+    constexpr Uint8 COLOR_KEY_B = 0xFF;
+}
 
-LTexture::LTexture() : mTexture(NULL), mWidth(0), mHeight(0) {}
+LTexture::LTexture() = default;
 
 bool LTexture::loadFromFile(const std::string& file_name) {
-    SDL_Texture* newTexture = NULL;
+    // Free existing texture first to prevent memory leak
+    free();
+    
     std::filesystem::path path = getResourcePath(file_name);
-    const std::string file_extension = path.extension();
+    const std::string& file_extension = path.extension();
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Loading image at: %s\n", path.c_str());
 
-    SDL_Surface* loadedSurface = NULL;
-    if (file_extension.find(".bmp") != std::string::npos) {
-        loadedSurface = SDL_LoadBMP(path.c_str());
-    } else if (file_extension.find(".png") != std::string::npos) {
-        loadedSurface = IMG_Load(path.c_str());
+    std::unique_ptr<SDL_Surface, SDL_SurfaceDeleter> loadedSurface;
+    
+    if (file_extension.ends_with(".bmp")) {
+        loadedSurface.reset(SDL_LoadBMP(path.c_str()));
+    } else if (file_extension.ends_with(".png")) {
+        loadedSurface.reset(IMG_Load(path.c_str()));
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "path: %s is invalid", path.c_str());
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Unsupported file format: %s (file: %s)", 
+                     file_extension.c_str(), path.c_str());
+        return false;
+    }
+    
+    if (!loadedSurface) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Failed to load image: %s. SDL Error: %s", 
+                     path.c_str(), SDL_GetError());
+        return false;
     }
 
-    //Color key image - we can specify a color, all pixels of that color will be treated as transparent
-    // map surface rgb creates a pixel
-    SDL_SetSurfaceColorKey( loadedSurface, true, SDL_MapSurfaceRGB( loadedSurface, 0, 0xFF, 0xFF ) );
+    // Color key image - specify a color, all pixels of that color will be treated as transparent
+    // SDL_MapSurfaceRGB creates a pixel value from RGB components
+    SDL_SetSurfaceColorKey(loadedSurface.get(), true, 
+                          SDL_MapSurfaceRGB(loadedSurface.get(), COLOR_KEY_R, COLOR_KEY_G, COLOR_KEY_B));
+    
     // Create texture from surface
-    newTexture = SDL_CreateTextureFromSurface(Globals::getRenderer(), loadedSurface);
-    if (!newTexture) {
-        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Unable to create texture! SDL Error: %s\n", SDL_GetError());
-    } else {
-        SDL_GetTextureSize(newTexture, &mWidth, &mHeight);
+    SDL_Renderer* renderer = Globals::getRenderer();
+    if (!renderer) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Renderer is null, cannot create texture");
+        return false;
     }
-    SDL_DestroySurface(loadedSurface);
-
-    mTexture = newTexture;
-    return mTexture != NULL;
+    
+    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface.get());
+    if (!newTexture) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, 
+                    "Unable to create texture from %s! SDL Error: %s", 
+                    path.c_str(), SDL_GetError());
+        return false;
+    }
+    
+    // Get texture dimensions and transfer ownership
+    if (!SDL_GetTextureSize(newTexture, &mWidth, &mHeight)) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, 
+                    "Failed to get texture size for %s! SDL Error: %s", 
+                    path.c_str(), SDL_GetError());
+        SDL_DestroyTexture(newTexture);
+        return false;
+    }
+    
+    mTexture.reset(newTexture);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, 
+                "Successfully loaded texture: %s (%.0fx%.0f)", 
+                path.c_str(), mWidth, mHeight);
+    
+    return true;
 }
 
-void LTexture::render( float x, float y, const SDL_FRect* clip)
+void LTexture::render(float x, float y, const SDL_FRect* clip) const
 {
-    //Set rendering space and render to screen
-    SDL_FRect renderQuad = { x, y, mWidth, mHeight };
-    if (clip != NULL) {
-        renderQuad.w = clip-> w;
+    if (!mTexture) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "Attempted to render null texture");
+        return;
+    }
+    
+    SDL_Renderer* renderer = Globals::getRenderer();
+    if (!renderer) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Renderer is null, cannot render texture");
+        return;
+    }
+    
+    // Set rendering space and render to screen
+    SDL_FRect renderQuad = {x, y, mWidth, mHeight};
+    
+    // If a clip rectangle is provided, adjust the rendering dimensions
+    if (clip != nullptr) {
+        renderQuad.w = clip->w;
         renderQuad.h = clip->h;
     }
-    SDL_RenderTexture( Globals::getInstance().getRenderer(), mTexture, clip, &renderQuad );
+    
+    if (!SDL_RenderTexture(renderer, mTexture.get(), clip, &renderQuad)) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, 
+                    "Failed to render texture! SDL Error: %s", SDL_GetError());
+    }
 }
 
-float LTexture::getWidth() const
+float LTexture::getWidth() const noexcept
 {
     return mWidth;
 }
 
-float LTexture::getHeight() const
+float LTexture::getHeight() const noexcept
 {
     return mHeight;
 }
 
-LTexture::~LTexture()
+void LTexture::free() noexcept
 {
-//    free();
+    mTexture.reset();  // Automatically calls deleter if texture exists
+    mWidth = 0.0f;
+    mHeight = 0.0f;
 }

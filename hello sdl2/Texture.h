@@ -10,6 +10,8 @@
 
 #include <SDL3/SDL.h>
 #include <string>
+#include <string_view>
+#include <memory>
 
 class LTexture
 {
@@ -18,28 +20,54 @@ class LTexture
         LTexture();
 
         //Deallocates memory
-        ~LTexture();
+        ~LTexture() = default;
 
-        //Loads image at specified path
-        bool loadFromFile( const std::string& path );
+        // Delete copy operations (textures shouldn't be copied)
+        LTexture(const LTexture&) = delete;
+        LTexture& operator=(const LTexture&) = delete;
 
-        //Deallocates texture
-//        void free();
+        // Default move operations (allow transfer of ownership)
+        LTexture(LTexture&&) noexcept = default;
+        LTexture& operator=(LTexture&&) noexcept = default;
 
-        //Renders texture at given point
-        void render( float x, float y, const SDL_FRect* clip = NULL );
+        // Loads image at specified path
+        // Returns true on success, false on failure (with error logged)
+        [[nodiscard]] bool loadFromFile(const std::string& path);
 
-        //Gets image dimensions
-        float getWidth() const;
-        float getHeight() const;
+        // Deallocates texture and resets dimensions
+        void free() noexcept;
+
+        // Renders texture at given point
+        // If clip is provided, only that portion of the texture is rendered
+        void render(float x, float y, const SDL_FRect* clip = nullptr) const;
+
+        // Gets image dimensions
+        [[nodiscard]] float getWidth() const noexcept;
+        [[nodiscard]] float getHeight() const noexcept;
+
+        // Check if texture is loaded
+        [[nodiscard]] explicit operator bool() const noexcept { return mTexture != nullptr; }
+        
+        // Check if texture is loaded (alternative to operator bool)
+        [[nodiscard]] bool isLoaded() const noexcept { return mTexture != nullptr; }
 
     private:
+        // Custom deleter for SDL_Texture
+        struct SDL_TextureDeleter {
+            void operator()(SDL_Texture* texture) const {
+                if (texture) {
+                    SDL_DestroyTexture(texture);
+                }
+            }
+        };
+
         //The actual hardware texture
-        SDL_Texture* mTexture;
+        // best practice: smart pointers
+        std::unique_ptr<SDL_Texture, SDL_TextureDeleter> mTexture;
 
         //Image dimensions
-        float mWidth;
-        float mHeight;
+        float mWidth{0.0f};
+        float mHeight{0.0f};
 };
 
 #endif // LTEXTURE_H

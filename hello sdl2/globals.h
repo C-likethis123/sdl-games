@@ -19,9 +19,32 @@
 #include <SDL3/SDL_main.h>
 #include <filesystem>
 #include <string>
+#include <memory>
+
+// Custom deleters for SDL resources
+struct SDL_CharDeleter {
+    void operator()(char* ptr) const {
+        if (ptr) SDL_free(ptr);
+    }
+};
+
+struct SDL_WindowDeleter {
+    void operator()(SDL_Window* ptr) const {
+        if (ptr) SDL_DestroyWindow(ptr);
+    }
+};
+
+struct SDL_RendererDeleter {
+    void operator()(SDL_Renderer* ptr) const {
+        if (ptr) SDL_DestroyRenderer(ptr);
+    }
+};
 
 class Globals {
 public:
+
+    // initialise the globals
+    static bool initialise();
     // Get the singleton instance
     static Globals& getInstance();
 
@@ -34,6 +57,12 @@ public:
     // Get window
     static SDL_Window* getWindow();
     static SDL_Renderer* getRenderer();
+    
+    // Get render output size (actual pixel dimensions)
+    static bool getRenderOutputSize(int* width, int* height);
+    
+    // Cleanup resources (call before SDL_Quit)
+    static void cleanup();
 
     Globals(const Globals&) = delete;
     Globals& operator=(const Globals&) = delete;
@@ -42,14 +71,11 @@ public:
     ~Globals() = default;
 
 private:
-    Globals() : basePath(nullptr) {
-        if (!SDL_CreateWindowAndRenderer("Mai Tutorial", 640, 480, 0, &gWindow, &gRenderer)) {
-            SDL_Log("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        }
-    }
+    Globals() : basePath(nullptr), gWindow(nullptr), gRenderer(nullptr) {}
+    
     const char* basePath;
-    SDL_Window* gWindow;
-    SDL_Renderer* gRenderer;
+    std::unique_ptr<SDL_Window, SDL_WindowDeleter> gWindow;
+    std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> gRenderer;
 };
 
 // Convenience function for easy access

@@ -7,26 +7,27 @@
 #include "globals.h"
 #include "Texture.h"
 
-//Current displayed image
 
+
+
+// Refactoring goal: get rid of global constants
 LTexture gSpriteSheetTexture;
-std::vector<std::pair<SDL_FRect, SDL_FRect>> gSpriteClips({
-    {SDL_FRect{0, 0, 0, 0}, SDL_FRect{ 0, 0, 100, 100 }},
-    {SDL_FRect{640-100, 0, 0, 0}, SDL_FRect{ 100, 0, 100, 100 } },
-    {SDL_FRect{0, 480-100,0,0}, SDL_FRect{ 0, 100, 100, 100 }},
-    {SDL_FRect{640-100, 480-100,0,0}, SDL_FRect{ 100, 100, 100, 100 }},
-});
+std::vector<std::pair<SDL_FRect, SDL_FRect>> gSpriteClips;
 
+// Refactoring goal: getRenderer() is not obvious that the window is also initialised
 // Initialize SDL, window, and renderer
 bool initialise() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return false;
     }
-    
-    SDL_Renderer* gRenderer = Globals::getRenderer();
 
-    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    if (!Globals::initialise()) {
+        SDL_Log("Globals could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return false;
+    }
+
+    SDL_SetRenderDrawColor(Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
 
     return true;
 }
@@ -43,20 +44,26 @@ bool load_media() {
         printf( "Failed to load sprites.png\n" );
         success = false;
     }
+    
+    // Get actual screen dimensions
+    int screenWidth = 640;
+    int screenHeight = 480;
+    
+    // Initialize sprite positions based on actual screen size
+    gSpriteClips = {
+        {SDL_FRect{0, 0, 0, 0}, SDL_FRect{0, 0, 100, 100}},  // Top-left
+        {SDL_FRect{float(screenWidth-100), 0, 0, 0}, SDL_FRect{100, 0, 100, 100}},  // Top-right
+        {SDL_FRect{0, float(screenHeight-100), 0, 0}, SDL_FRect{0, 100, 100, 100}},  // Bottom-left
+        {SDL_FRect{float(screenWidth-100), float(screenHeight-100), 0, 0}, SDL_FRect{100, 100, 100, 100}},  // Bottom-right
+    };
 
     return success;
 }
 
 // Free resources and quit SDL
 void close() {
-    if (Globals::getRenderer()) {
-        SDL_DestroyRenderer(Globals::getRenderer());
-    }
-
-    if (Globals::getWindow()) {
-        SDL_DestroyWindow(Globals::getWindow());
-    }
-
+    // Cleanup resources in proper order (Renderer, Window, then SDL)
+    Globals::cleanup();
     SDL_Quit();
 }
 
@@ -68,8 +75,8 @@ int main(int argc, char* args[]) {
     }
 
     // Clear screen to white
-    SDL_SetRenderDrawColor(Globals::getInstance().getRenderer(), 255, 255, 255, 255);
-    SDL_RenderClear(Globals::getInstance().getRenderer());
+    SDL_SetRenderDrawColor(Globals::getRenderer(), 255, 255, 255, 255);
+    SDL_RenderClear(Globals::getRenderer());
 
     
     bool quit = false;
