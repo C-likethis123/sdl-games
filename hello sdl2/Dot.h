@@ -23,11 +23,11 @@ public:
         //Initializes the variables
         Dot();
 
-        //Takes key presses and adjusts the dot's velocity
-        void handleEvent( SDL_Event& e );
+        //Checks key presses and adjusts the dot's velocity
+        void handleEvent();
 
         //Moves the dot
-        void move();
+        void move(SDL_FRect& wall);
 
         //Shows the dot on the screen
         void render();
@@ -42,6 +42,8 @@ public:
         int mVelY{0};
     
         LTexture dotTexture;
+    
+        SDL_FRect collisionBox;
 };
 
 #endif // DOT_H

@@ -6,47 +6,56 @@
 //
 
 #include "Dot.h"
+#include "CollisionUtil.h"
 
 Dot::Dot() {
     if (!dotTexture.loadFromFile("dot.bmp", 0xFF, 0xff, 0xff)) {
     
         SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Error loading dot.bmp, %s", SDL_GetError());
     }
+    
+    collisionBox.w = DOT_WIDTH;
+    collisionBox.h = DOT_HEIGHT;
 };
 
-void Dot::handleEvent(SDL_Event& e) {
-    if( e.type == SDL_EVENT_KEY_DOWN && e.key.repeat == 0 )
-        {
-            //Adjust the velocity
-            switch( e.key.key )
-            {
-                case SDLK_UP: mVelY -= DOT_VEL; break;
-                case SDLK_DOWN: mVelY += DOT_VEL; break;
-                case SDLK_LEFT: mVelX -= DOT_VEL; break;
-                case SDLK_RIGHT: mVelX += DOT_VEL; break;
-            }
-        }
+void Dot::handleEvent() {
+    SDL_PumpEvents();
+    const bool* state = SDL_GetKeyboardState(nullptr);
+    if ( state[SDL_SCANCODE_UP] ) {
+        mVelY -= DOT_VEL;
+    } else if ( state[SDL_SCANCODE_DOWN]) {
+        mVelY += DOT_VEL;
+    } else if ( state[SDL_SCANCODE_LEFT]) {
+        mVelX -= DOT_VEL;
+    } else if (state[SDL_SCANCODE_RIGHT]) {
+        mVelX += DOT_VEL;
+    }
+    
 }
 
-void Dot::move()
+void Dot::move(SDL_FRect& wall)
 {
     //Move the dot left or right
     mPosX += mVelX;
+    collisionBox.x = mPosX;
     
     //If the dot went too far to the left or right
-    if( ( mPosX < 0 ) || ( mPosX + DOT_WIDTH > 640 ) )
+    if( ( mPosX < 0 ) || ( mPosX + DOT_WIDTH > 640 ) || checkCollision( collisionBox, wall ) )
     {
         //Move back
         mPosX -= mVelX;
+        collisionBox.x = mPosX;
     }
     //Move the dot up or down
-        mPosY += mVelY;
+    mPosY += mVelY;
+    collisionBox.y = mPosY;
 
     //If the dot went too far up or down
-    if( ( mPosY < 0 ) || ( mPosY + DOT_HEIGHT > 480 ) )
+    if( ( mPosY < 0 ) || ( mPosY + DOT_HEIGHT > 480 )  || checkCollision( collisionBox, wall ) )
     {
         //Move back
         mPosY -= mVelY;
+        collisionBox.y = mPosY;
     }
 }
 

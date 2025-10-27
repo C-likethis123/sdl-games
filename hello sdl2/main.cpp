@@ -82,26 +82,32 @@ int main(int argc, char* args[]) {
     bool quit = false;
     SDL_Event e;
     Dot dot;
+    SDL_FRect wall{300, 40, 40, 400};
     uint64_t start_time = SDL_GetTicks();
+    
 
     while (!quit) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
-            } else if (e.type == SDL_EVENT_KEY_DOWN) {
-                dot.handleEvent(e);
             }
         }
+        dot.handleEvent();
+
         //Clear screen
         SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );
         SDL_RenderClear( Globals::getRenderer() );
+        
+        //Render wall
+        SDL_SetRenderDrawColor( Globals::getRenderer(), 0x00, 0x00, 0x00, 0xFF );
+        SDL_RenderRect( Globals::getRenderer(), &wall );
 
         for (const auto& rect : gSpriteClips) {
             gSpriteSheetTexture.render(rect.first.x, rect.first.y, &rect.second);
         }
         uint64_t current_time = SDL_GetTicks();
         if (current_time - start_time >= 120) {
-            dot.move();
+            dot.move(wall);
             start_time = current_time;
         }
         dot.render();
