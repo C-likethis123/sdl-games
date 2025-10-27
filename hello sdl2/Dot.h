@@ -16,6 +16,10 @@ public:
         //The dimensions of the dot
         static const int DOT_WIDTH = 20;
         static const int DOT_HEIGHT = 20;
+    
+        //The dimensions of the level
+        static const int LEVEL_WIDTH = 1280;
+        static const int LEVEL_HEIGHT = 960;
 
         //Maximum axis velocity of the dot
         static const int DOT_VEL = 10;
@@ -30,7 +34,10 @@ public:
         void move(SDL_FRect& wall);
 
         //Shows the dot on the screen
-        void render();
+        void render(int camX, int camY);
+    
+        int getPosX() const;
+        int getPosY() const;
 
     private:
         //The X and Y offsets of the dot

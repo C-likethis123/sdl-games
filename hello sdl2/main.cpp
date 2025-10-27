@@ -9,7 +9,13 @@
 #include "Texture.h"
 
 
+//The dimensions of the level
+const int LEVEL_WIDTH = 1280;
+const int LEVEL_HEIGHT = 960;
 
+//Screen dimension constants
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
 
 // Refactoring goal: get rid of global constants
 LTexture gSpriteSheetTexture;
@@ -84,6 +90,7 @@ int main(int argc, char* args[]) {
     Dot dot;
     SDL_FRect wall{300, 40, 40, 400};
     uint64_t start_time = SDL_GetTicks();
+    SDL_FRect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     
 
     while (!quit) {
@@ -101,6 +108,7 @@ int main(int argc, char* args[]) {
         //Render wall
         SDL_SetRenderDrawColor( Globals::getRenderer(), 0x00, 0x00, 0x00, 0xFF );
         SDL_RenderRect( Globals::getRenderer(), &wall );
+        
 
         for (const auto& rect : gSpriteClips) {
             gSpriteSheetTexture.render(rect.first.x, rect.first.y, &rect.second);
@@ -108,9 +116,36 @@ int main(int argc, char* args[]) {
         uint64_t current_time = SDL_GetTicks();
         if (current_time - start_time >= 120) {
             dot.move(wall);
+            //Center the camera over the dot
+            camera.x = ( dot.getPosX() + Dot::DOT_WIDTH / 2 ) - SCREEN_WIDTH / 2;
+            camera.y = ( dot.getPosY() + Dot::DOT_HEIGHT / 2 ) - SCREEN_HEIGHT / 2;
+            
+            //Keep the camera in bounds
+            if( camera.x < 0 )
+            {
+                camera.x = 0;
+            }
+            if( camera.y < 0 )
+            {
+                camera.y = 0;
+            }
+            if( camera.x > LEVEL_WIDTH - camera.w )
+            {
+                camera.x = LEVEL_WIDTH - camera.w;
+            }
+            if( camera.y > LEVEL_HEIGHT - camera.h )
+            {
+                camera.y = LEVEL_HEIGHT - camera.h;
+            }
+            
             start_time = current_time;
         }
-        dot.render();
+        dot.render(camera.x, camera.y);
+        
+        // Render camera
+        SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );
+        SDL_RenderRect( Globals::getRenderer(), &camera );
+        
         //Update screen
         SDL_RenderPresent( Globals::getRenderer() );
         

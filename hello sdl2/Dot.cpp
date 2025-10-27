@@ -40,7 +40,7 @@ void Dot::move(SDL_FRect& wall)
     collisionBox.x = mPosX;
     
     //If the dot went too far to the left or right
-    if( ( mPosX < 0 ) || ( mPosX + DOT_WIDTH > 640 ) || checkCollision( collisionBox, wall ) )
+    if( ( mPosX < 0 ) || ( mPosX + DOT_WIDTH > LEVEL_WIDTH ) || checkCollision( collisionBox, wall ) )
     {
         //Move back
         mPosX -= mVelX;
@@ -51,7 +51,7 @@ void Dot::move(SDL_FRect& wall)
     collisionBox.y = mPosY;
 
     //If the dot went too far up or down
-    if( ( mPosY < 0 ) || ( mPosY + DOT_HEIGHT > 480 )  || checkCollision( collisionBox, wall ) )
+    if( ( mPosY < 0 ) || ( mPosY + DOT_HEIGHT > LEVEL_HEIGHT )  || checkCollision( collisionBox, wall ) )
     {
         //Move back
         mPosY -= mVelY;
@@ -59,7 +59,14 @@ void Dot::move(SDL_FRect& wall)
     }
 }
 
-void Dot::render() {
-    dotTexture.render(mPosX, mPosY);
+void Dot::render(int camX, int camY) {
+    dotTexture.render(mPosX - camX, mPosY - camY);
 }
 
+int Dot::getPosX() const {
+    return mPosX;
+}
+
+int Dot::getPosY() const {
+    return mPosY;
+}
