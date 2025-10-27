@@ -5,6 +5,7 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <vector>
 #include "globals.h"
+#include "Dot.h"
 #include "Texture.h"
 
 
@@ -12,10 +13,8 @@
 
 // Refactoring goal: get rid of global constants
 LTexture gSpriteSheetTexture;
-LTexture gWalkingManTexture;
 // will need to figure out how to associate a sprite with a constant
 std::vector<std::pair<SDL_FRect, SDL_FRect>> gSpriteClips;
-std::vector<SDL_FRect> gWalkingSpriteClips;
 
 // Refactoring goal: getRenderer() is not obvious that the window is also initialised
 // Initialize SDL, window, and renderer
@@ -58,21 +57,6 @@ bool load_media() {
         {SDL_FRect{float(screenWidth-100), float(screenHeight-100), 0, 0}, SDL_FRect{100, 100, 100, 100}},  // Bottom-right
     };
     
-    if (!gWalkingManTexture.loadFromFile( "walking.png") ) {
-        success = false;
-    }
-    
-    // Initialize sprite positions based on actual screen size
-    gWalkingSpriteClips = {
-        SDL_FRect{0, 0, 64, 205},  // Top-left
-        SDL_FRect{64, 0, 64, 205},  // Top-right
-        SDL_FRect{128, 0, 64, 205},  // Bottom-left
-        SDL_FRect{192, 0, 64, 205}  // Bottom-right
-    };
-    
-    
-    
-
     return success;
 }
 
@@ -97,42 +81,15 @@ int main(int argc, char* args[]) {
     
     bool quit = false;
     SDL_Event e;
-    int CURRENT_WALKING_MAN = 0;
+    Dot dot;
     uint64_t start_time = SDL_GetTicks();
-    
-    //Angle of rotation
-    double degrees = 0;
 
-    //Flip type
-    SDL_FlipMode flipType = SDL_FLIP_NONE;
-    
     while (!quit) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
             } else if (e.type == SDL_EVENT_KEY_DOWN) {
-                switch (e.key.key) {
-                    case (SDLK_A):
-                    degrees -= 60;
-                    break;
-                    case SDLK_D:
-                    degrees += 60;
-                    break;
-
-                    case SDLK_Q:
-                    flipType = SDL_FLIP_HORIZONTAL;
-                    break;
-
-                    case SDLK_W:
-                    flipType = SDL_FLIP_NONE;
-                    break;
-
-                    case SDLK_E:
-                    flipType = SDL_FLIP_VERTICAL;
-                    break;
-                    default:
-                        flipType = SDL_FLIP_NONE;
-                }
+                dot.handleEvent(e);
             }
         }
         //Clear screen
@@ -142,15 +99,12 @@ int main(int argc, char* args[]) {
         for (const auto& rect : gSpriteClips) {
             gSpriteSheetTexture.render(rect.first.x, rect.first.y, &rect.second);
         }
-        SDL_FRect& rect = gWalkingSpriteClips[CURRENT_WALKING_MAN];
-        gWalkingManTexture.render((640 - rect.w) / 2, (480 - rect.h) / 2, &rect, degrees, NULL, flipType);
-        
-        uint64_t end_time = SDL_GetTicks();
-        if (end_time - start_time >= 120) {
-            CURRENT_WALKING_MAN = (CURRENT_WALKING_MAN + 1) % 4;
-            start_time = end_time;
+        uint64_t current_time = SDL_GetTicks();
+        if (current_time - start_time >= 120) {
+            dot.move();
+            start_time = current_time;
         }
-
+        dot.render();
         //Update screen
         SDL_RenderPresent( Globals::getRenderer() );
         

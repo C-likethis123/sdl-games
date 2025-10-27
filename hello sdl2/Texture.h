@@ -13,6 +13,13 @@
 #include <string_view>
 #include <memory>
 
+
+namespace {    
+    // Color key for transparency (cyan: R=0, G=255, B=255)
+    constexpr Uint8 COLOR_KEY_R = 0x00;
+    constexpr Uint8 COLOR_KEY_G = 0xFF;
+    constexpr Uint8 COLOR_KEY_B = 0xFF;
+}
 class LTexture
 {
     public:
@@ -32,7 +39,7 @@ class LTexture
 
         // Loads image at specified path
         // Returns true on success, false on failure (with error logged)
-        [[nodiscard]] bool loadFromFile(const std::string& path);
+    [[nodiscard]] bool loadFromFile(const std::string& path, int red = COLOR_KEY_R, int green = COLOR_KEY_G, int blue = COLOR_KEY_B);
 
         // Deallocates texture and resets dimensions
         void free() noexcept;

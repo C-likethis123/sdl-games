@@ -19,16 +19,11 @@ namespace {
             }
         }
     };
-    
-    // Color key for transparency (cyan: R=0, G=255, B=255)
-    constexpr Uint8 COLOR_KEY_R = 0x00;
-    constexpr Uint8 COLOR_KEY_G = 0xFF;
-    constexpr Uint8 COLOR_KEY_B = 0xFF;
 }
 
 LTexture::LTexture() = default;
 
-bool LTexture::loadFromFile(const std::string& file_name) {
+bool LTexture::loadFromFile(const std::string& file_name, int red, int green, int blue) {
     // Free existing texture first to prevent memory leak
     free();
     
@@ -57,7 +52,7 @@ bool LTexture::loadFromFile(const std::string& file_name) {
     // Color key image - specify a color, all pixels of that color will be treated as transparent
     // SDL_MapSurfaceRGB creates a pixel value from RGB components
     SDL_SetSurfaceColorKey(loadedSurface.get(), true, 
-                          SDL_MapSurfaceRGB(loadedSurface.get(), COLOR_KEY_R, COLOR_KEY_G, COLOR_KEY_B));
+                          SDL_MapSurfaceRGB(loadedSurface.get(), red, green, blue));
     
     // Create texture from surface
     SDL_Renderer* renderer = Globals::getRenderer();
