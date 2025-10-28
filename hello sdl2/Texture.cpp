@@ -5,7 +5,7 @@
 //  Created by Chow Jia Ying on 25/10/25.
 //
 #include "Texture.h"
-#include "globals.h"
+#include "Globals.h"
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <filesystem>

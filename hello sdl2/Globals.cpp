@@ -6,7 +6,7 @@
 //
 
 
-#include "globals.h"
+#include "Globals.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <filesystem>
