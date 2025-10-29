@@ -42,8 +42,14 @@ bool Globals::initialise() {
     // somehow SDL does not have a SDL_RENDERER_VSYNC flag that enables vsync.
     SDL_SetRenderVSync(tempRenderer, 1);
     
+    TTF_Font* tempFont = TTF_OpenFont( Globals::getResourcePath("lazy.ttf").c_str(), 28 );
+    if (!tempFont) {
+        SDL_Log("TTF cannot be loaded! SDL_Error: %s\n", SDL_GetError());
+    }
+    
     getInstance().gWindow.reset(tempWindow);
     getInstance().gRenderer.reset(tempRenderer);
+    getInstance().gFont.reset(tempFont);
 
     return true;
 }
@@ -64,20 +70,29 @@ SDL_Renderer* Globals::getRenderer() {
     return getInstance().gRenderer.get();
 }
 
+TTF_Font* Globals::getFont() {
+    return getInstance().gFont.get();
+}
+
+
 bool Globals::getRenderOutputSize(int* width, int* height) {
     return SDL_GetCurrentRenderOutputSize(getRenderer(), width, height);
 }
 
 void Globals::cleanup() {
     // Reset unique_ptrs to trigger cleanup in proper order
-    // (Renderer first, then Window, before SDL_Quit is called)
+    // (Font first, then Renderer, then Window, before SDL_Quit is called)
+    getInstance().gFont.reset();
     getInstance().gRenderer.reset();
     getInstance().gWindow.reset();
+    
+    // Quit SDL_ttf
+    TTF_Quit();
 }
 
 // Helper to get full resource path
 std::filesystem::path Globals::getResourcePath(const std::string& filename) {
-    const char* base = getBasePath();
+    const char* base = getInstance().getBasePath();
     if (!base) {
         return filename;
     }
