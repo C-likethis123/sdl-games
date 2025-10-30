@@ -69,6 +69,8 @@ public:
     // Get render output size (actual pixel dimensions)
     static bool getRenderOutputSize(int* width, int* height);
     
+    static void setScene(const std::string& sceneKey);
+    static const std::string& getSceneKey();
     // Cleanup resources (call before SDL_Quit)
     static void cleanup();
 
@@ -82,6 +84,7 @@ private:
     Globals() : basePath(nullptr), gWindow(nullptr), gRenderer(nullptr) {}
     
     const char* basePath;
+    std::string sceneKey;
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> gWindow;
     std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> gRenderer;
     std::unique_ptr<TTF_Font, SDL_FontDeleter> gFont;

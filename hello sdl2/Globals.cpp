@@ -19,6 +19,8 @@ Globals& Globals::getInstance() {
 }
 
 bool Globals::initialise() {
+    // start with initial screen
+    getInstance().sceneKey = "initial";
     // Create window with specific flags
     SDL_Window* tempWindow = SDL_CreateWindow(
         "Mai Tutorial", 640, 480, 0);
@@ -52,6 +54,14 @@ bool Globals::initialise() {
     getInstance().gFont.reset(tempFont);
 
     return true;
+}
+
+void Globals::setScene(const std::string &sceneKey) {
+    getInstance().sceneKey = sceneKey;
+}
+
+const std::string& Globals::getSceneKey() {
+    return getInstance().sceneKey;
 }
 
 // Get the base path (initializes on first call)

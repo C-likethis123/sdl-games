@@ -4,9 +4,14 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include <vector>
+#include <memory>
+
 #include "Globals.h"
 #include "Texture.h"
-
+#include "Button.h"
+#include "scenes/Scene.h"
+#include "scenes/InitialScene.h"
+#include "scenes/GameScene.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -40,23 +45,6 @@ bool initialise() {
 }
 
 
-
-bool load_media() {
-    //Loading success flag
-    bool success = true;
-
-
-    //Render text
-     SDL_Color textColor = { 0, 0, 0 };
-     if( !gTextTexture.loadFromRenderedText( "Tic Tac Toe", textColor ) )
-     {
-         printf( "Failed to render text texture!\n" );
-         success = false;
-     }
-    
-    return success;
-}
-
 // Free resources and quit SDL
 void close() {
     // Cleanup resources in proper order (Renderer, Window, then SDL)
@@ -67,10 +55,6 @@ void close() {
 
 int main(int argc, char* args[]) {
     if (!initialise()) return 1;
-    if (!load_media()) {
-        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to load media");
-        close();
-    }
 
     // Clear screen to white
     SDL_SetRenderDrawColor(Globals::getRenderer(), 255, 255, 255, 255);
@@ -81,12 +65,18 @@ int main(int argc, char* args[]) {
     SDL_Event e;
     uint64_t start_time = SDL_GetTicks();
     SDL_FRect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+    // TODO render scenes according to scene key
+    std::unordered_map<std::string, std::unique_ptr<Scene>> scenes;
+    scenes["initial"] = std::make_unique<InitialScene>();
+    scenes["next"] = std::make_unique<GameScene>();
     
-
     while (!quit) {
+        Scene& scene = *scenes[Globals::getSceneKey()];
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
+            } else {
+                scene.handleEvent(e);
             }
         }
         
@@ -97,7 +87,7 @@ int main(int argc, char* args[]) {
         SDL_RenderClear( Globals::getRenderer() );
         
         // Update actions and render again
-        gTextTexture.render( ( SCREEN_WIDTH - gTextTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - gTextTexture.getHeight() ) / 2 );
+        scene.render();
         
         //Update screen
         SDL_RenderPresent( Globals::getRenderer() );
