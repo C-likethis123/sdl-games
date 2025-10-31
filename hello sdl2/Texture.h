@@ -39,7 +39,9 @@ class LTexture
 
         // Loads image at specified path
         // Returns true on success, false on failure (with error logged)
-    [[nodiscard]] bool loadFromFile(const std::string& path, int red = COLOR_KEY_R, int green = COLOR_KEY_G, int blue = COLOR_KEY_B);
+        [[nodiscard]] bool loadFromFile(const std::string& path, int red = COLOR_KEY_R, int green = COLOR_KEY_G, int blue = COLOR_KEY_B);
+        
+        [[nodiscard]] bool loadFromRenderedText(const std::string& textureText, SDL_Color textColor);
 
         // Deallocates texture and resets dimensions
         void free() noexcept;

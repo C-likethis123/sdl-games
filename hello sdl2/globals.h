@@ -17,6 +17,7 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <filesystem>
 #include <string>
 #include <memory>
@@ -40,6 +41,12 @@ struct SDL_RendererDeleter {
     }
 };
 
+struct SDL_FontDeleter {
+    void operator()(TTF_Font* ptr) const {
+        if (ptr) TTF_CloseFont(ptr);
+    }
+};
+
 class Globals {
 public:
 
@@ -52,15 +59,24 @@ public:
     const char* getBasePath();
 
     // Helper to get full resource path
-    std::filesystem::path getResourcePath(const std::string& filename);
+    static std::filesystem::path getResourcePath(const std::string& filename);
     
     // Get window
     static SDL_Window* getWindow();
     static SDL_Renderer* getRenderer();
+    static TTF_Font* getFont();
     
     // Get render output size (actual pixel dimensions)
     static bool getRenderOutputSize(int* width, int* height);
     
+    static void setScene(const std::string& sceneKey);
+    static const std::string& getSceneKey();
+    
+    static void setPlayer(const std::string& player);
+    static const std::string& getPlayer();
+
+    static void setEnding(const std::string& ending);
+    static const std::string& getEnding();
     // Cleanup resources (call before SDL_Quit)
     static void cleanup();
 
@@ -74,8 +90,12 @@ private:
     Globals() : basePath(nullptr), gWindow(nullptr), gRenderer(nullptr) {}
     
     const char* basePath;
+    std::string sceneKey;
+    std::string ending;
+    std::string player;
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> gWindow;
     std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> gRenderer;
+    std::unique_ptr<TTF_Font, SDL_FontDeleter> gFont;
 };
 
 // Convenience function for easy access

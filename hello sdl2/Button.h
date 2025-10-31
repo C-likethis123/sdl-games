@@ -1,0 +1,56 @@
+//
+//  Button.h
+//  hello sdl2
+//
+//  Created by Chow Jia Ying on 29/10/25.
+//
+
+#ifndef BUTTON_H
+#define BUTTON_H
+
+#include <string>
+#include <functional>
+#include <SDL3/SDL.h>
+#include "Texture.h"
+
+class Button {
+public:
+    Button(const std::string& text, SDL_FRect rect, std::function<void()> func);
+    
+    // Delete copy operations (Button contains non-copyable LTexture)
+    Button(const Button&) = delete;
+    Button& operator=(const Button&) = delete;
+    
+    // Default move operations (allow Button to be moved)
+    Button(Button&&) noexcept = default;
+    Button& operator=(Button&&) noexcept = default;
+    
+    ~Button() = default;
+    
+    void onClick();
+    bool isClicked(SDL_Event& e);
+    void render();
+    
+    // Update button text (useful for tic-tac-toe grid cells)
+    void setText(const std::string& newText);
+    const std::string& getText() const { return text; }
+    
+// Hover functionality
+    bool isMouseOver(SDL_Event& e) const;
+    void setHovered(bool hovered) { isHovered = hovered; }
+    bool getHovered() const { return isHovered; }
+    
+private:
+    void initialise();
+    std::string text;
+    int width{30};
+    int height{30};
+    std::function<void()> func;
+    LTexture textTexture;
+    bool isHovered{false};
+    
+    // area that the button is being rendered on
+    SDL_FRect rect;
+};
+
+#endif

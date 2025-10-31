@@ -5,8 +5,9 @@
 //  Created by Chow Jia Ying on 25/10/25.
 //
 #include "Texture.h"
-#include "globals.h"
+#include "Globals.h"
 #include <SDL3/SDL_main.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_image/SDL_image.h>
 #include <filesystem>
 
@@ -22,6 +23,42 @@ namespace {
 }
 
 LTexture::LTexture() = default;
+
+bool LTexture::loadFromRenderedText(const std::string& textureText, SDL_Color textColor) {
+    free();
+    TTF_Font* gFont = Globals::getFont();
+    std::unique_ptr<SDL_Surface, SDL_SurfaceDeleter> textSurface;
+    SDL_Renderer* renderer = Globals::getRenderer();
+    textSurface.reset(TTF_RenderText_Blended( gFont, textureText.c_str(), 0, textColor ));
+    if (!textSurface) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Cannot load text: %s, error: %s\n",
+                     textureText.c_str(), SDL_GetError());
+        return false;
+    }
+    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, textSurface.get());
+    if (!newTexture) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER,
+                    "Unable to create texture from text. SDL Error: %s",
+                    SDL_GetError());
+        return false;
+    }
+    
+    // Get texture dimensions and transfer ownership
+    if (!SDL_GetTextureSize(newTexture, &mWidth, &mHeight)) {
+        SDL_LogError(SDL_LOG_CATEGORY_RENDER,
+                    "Failed to get texture size for text! SDL Error: %s",
+                    SDL_GetError());
+        SDL_DestroyTexture(newTexture);
+        return false;
+    }
+    
+    mTexture.reset(newTexture);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
+                "Successfully loaded texture: (%.0fx%.0f)",
+                mWidth, mHeight);
+    
+    return true;
+}
 
 bool LTexture::loadFromFile(const std::string& file_name, int red, int green, int blue) {
     // Free existing texture first to prevent memory leak
