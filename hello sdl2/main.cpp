@@ -13,6 +13,14 @@
 #include "scenes/InitialScene.h"
 #include "scenes/GameScene.h"
 
+
+/**
+ 
+ Refactoring opportunities:
+ 1. How to position elements better other than hardcoding?
+ 2. How to resize widgets according to elements?
+ 
+ */
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -77,6 +85,10 @@ int main(int argc, char* args[]) {
                 quit = true;
             } else {
                 scene.handleEvent(e);
+                
+                if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                    printf("x: %f, y: %f\n", e.button.x, e.button.y);
+                }
             }
         }
         

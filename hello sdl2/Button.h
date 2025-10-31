@@ -15,7 +15,7 @@
 
 class Button {
 public:
-    Button(const std::string& text, std::function<void()> func);
+    Button(const std::string& text, SDL_FRect rect, std::function<void()> func);
     
     // Delete copy operations (Button contains non-copyable LTexture)
     Button(const Button&) = delete;
@@ -30,6 +30,11 @@ public:
     void onClick();
     bool isClicked(SDL_Event& e);
     void render();
+    
+    // Update button text (useful for tic-tac-toe grid cells)
+    void setText(const std::string& newText);
+    const std::string& getText() const { return text; }
+    
 private:
     void initialise();
     std::string text;
@@ -39,7 +44,7 @@ private:
     LTexture textTexture;
     
     // area that the button is being rendered on
-    SDL_FRect rect{160, 340, 30, 30};
+    SDL_FRect rect;
 };
 
 #endif

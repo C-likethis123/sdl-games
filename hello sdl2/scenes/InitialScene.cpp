@@ -17,7 +17,12 @@ void InitialScene::initialise() {
     if( !background.loadFromRenderedText( "Tic Tac Toe", textColor ) ) {
         printf( "Failed to render text texture!\n" );
     }
-    buttons.emplace_back("Cross", []() {
+    buttons.emplace_back("Cross", SDL_FRect{160, 340, 30, 30}, []() {
+        Globals::setPlayer("cross");
+        Globals::setScene("next");
+    });
+    buttons.emplace_back("Circle", SDL_FRect{400, 340, 30, 30}, []() {
+        Globals::setPlayer("cross");
         Globals::setScene("next");
     });
 };

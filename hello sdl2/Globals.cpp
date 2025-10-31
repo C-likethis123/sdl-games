@@ -56,6 +56,14 @@ bool Globals::initialise() {
     return true;
 }
 
+void Globals::setPlayer(const std::string &player) {
+    getInstance().player = player;
+}
+
+const std::string& Globals::getPlayer() {
+    return getInstance().player;
+}
+
 void Globals::setScene(const std::string &sceneKey) {
     getInstance().sceneKey = sceneKey;
 }
