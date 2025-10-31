@@ -19,10 +19,13 @@ void GameScene::initialise() {
         int row = i / 3;  // 0, 1, 2
         int col = i % 3;  // 0, 1, 2
         
-        float x = GRID_START_X + (col * CELL_SIZE);
-        float y = GRID_START_Y + (row * CELL_SIZE);
+        // Add inset to keep grid lines visible
+        float x = GRID_START_X + (col * CELL_SIZE) + BUTTON_INSET;
+        float y = GRID_START_Y + (row * CELL_SIZE) + BUTTON_INSET;
+        float width = CELL_SIZE - (2 * BUTTON_INSET);  // Reduce by inset on both sides
+        float height = CELL_SIZE - (2 * BUTTON_INSET);
         
-        SDL_FRect buttonRect = {x, y, CELL_SIZE, CELL_SIZE};
+        SDL_FRect buttonRect = {x, y, width, height};
         
         // Capture this and i to access buttons vector
         auto buttonCallback = [this, i]() {

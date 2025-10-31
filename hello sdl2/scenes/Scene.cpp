@@ -18,6 +18,9 @@ Scene::~Scene() {
 
 void Scene::handleEvent(SDL_Event& e) {
     for (auto& button : buttons) {
+        bool isHovered = button.isMouseOver(e);
+        button.setHovered(isHovered);  // Always update hover state (true or false)
+        
         if (button.isClicked(e)) {
             button.onClick();
             break;

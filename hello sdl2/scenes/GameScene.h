@@ -22,6 +22,7 @@ private:
     const float CELL_SIZE = 100.0f;
     const float GRID_START_X = (SCREEN_WIDTH - GRID_SIZE) / 2.0f;  // Center horizontally
     const float GRID_START_Y = 120.0f;  // Leave space for text at top
+    const float BUTTON_INSET = 2.0f;  // Padding to keep grid lines visible
     bool checkWin(const std::string& player);
 };
 

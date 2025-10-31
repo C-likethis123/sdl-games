@@ -35,6 +35,11 @@ public:
     void setText(const std::string& newText);
     const std::string& getText() const { return text; }
     
+// Hover functionality
+    bool isMouseOver(SDL_Event& e) const;
+    void setHovered(bool hovered) { isHovered = hovered; }
+    bool getHovered() const { return isHovered; }
+    
 private:
     void initialise();
     std::string text;
@@ -42,6 +47,7 @@ private:
     int height{30};
     std::function<void()> func;
     LTexture textTexture;
+    bool isHovered{false};
     
     // area that the button is being rendered on
     SDL_FRect rect;

@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "Globals.h"
-#include "Texture.h"
-#include "Button.h"
 #include "scenes/Scene.h"
 #include "scenes/InitialScene.h"
 #include "scenes/GameScene.h"
@@ -22,11 +20,6 @@
  2. How to resize widgets according to elements?
  
  */
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-LTexture gTextTexture;
 
 // Initialize SDL, window, and renderer
 bool initialise() {

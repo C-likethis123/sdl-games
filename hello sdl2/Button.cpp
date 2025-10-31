@@ -6,6 +6,7 @@
 //
 
 #include "Button.h"
+#include "Globals.h"
 #include <SDL3/SDL_main.h>
 
 void Button::onClick() {
@@ -15,6 +16,16 @@ void Button::onClick() {
 bool Button::isClicked(SDL_Event& e) {
     if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && e.button.clicks == 1) {
         return rect.x <= e.button.x && e.button.x <= rect.x + rect.w && rect.y <= e.button.y && e.button.y <= rect.y + rect.h;
+    }
+    return false;
+}
+
+bool Button::isMouseOver(SDL_Event& e) const {
+    if (e.type == SDL_EVENT_MOUSE_MOTION) {
+        float mouseX = e.motion.x;
+        float mouseY = e.motion.y;
+        return (mouseX >= rect.x && mouseX <= rect.x + rect.w &&
+                mouseY >= rect.y && mouseY <= rect.y + rect.h);
     }
     return false;
 }
@@ -37,6 +48,14 @@ void Button::initialise() {
 }
 
 void Button::render() {
+    // Draw hover background if hovered and cell is empty
+    if (isHovered && text.empty()) {
+        SDL_SetRenderDrawColor(Globals::getRenderer(), 173, 216, 230, 255);  // Light blue
+    } else {
+        SDL_SetRenderDrawColor(Globals::getRenderer(), 255, 255, 255, 255);
+    }
+    SDL_RenderFillRect(Globals::getRenderer(), &rect);
+    
     if (!text.empty()) {
         // Center text within the button rect
         int textX = rect.x + (rect.w - textTexture.getWidth()) / 2;
