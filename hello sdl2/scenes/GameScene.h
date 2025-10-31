@@ -15,6 +15,14 @@ public:
     GameScene();
     void initialise() override;
     void render() override;
+private:
+    // Equal-sized grid: 300x300 total, each cell is 100x100
+    // Centered on screen (640x480)
+    const float GRID_SIZE = 300.0f;
+    const float CELL_SIZE = 100.0f;
+    const float GRID_START_X = (SCREEN_WIDTH - GRID_SIZE) / 2.0f;  // Center horizontally
+    const float GRID_START_Y = 120.0f;  // Leave space for text at top
+    bool checkWin(const std::string& player);
 };
 
 #endif // GAMESCENE_H

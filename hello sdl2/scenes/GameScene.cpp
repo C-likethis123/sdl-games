@@ -14,43 +14,52 @@ GameScene::GameScene() {
 }
 
 void GameScene::initialise() {
-    // Grid positions based on the rendered lines:
-    // Vertical lines at x=220 and x=420
-    // Horizontal lines at y=180 and y=300
-    // Grid spans from (100, 100) to (540, 400)
-    
-    // Calculate center positions for each cell
-    // Cell dimensions: 120x80 approximately
-    struct GridPos {
-        float x, y;
-    };
-    
-    GridPos positions[9] = {
-        // Row 1 (y: 100-180)
-        {100.0f, 100.0f}, {220.0f, 100.0f}, {420.0f, 100.0f},
-        // Row 2 (y: 180-300)
-        {100.0f, 180.0f}, {220.0f, 180.0f}, {420.0f, 180.0f},
-        // Row 3 (y: 300-400)
-        {100.0f, 300.0f}, {220.0f, 300.0f}, {420.0f, 300.0f}
-    };
-    
     // Create 9 buttons for the grid
     for (int i = 0; i < 9; i++) {
-        // Initial text is empty, will be filled when clicked
-        // Cell widths: first and last columns are 120px, middle column is 200px
-        float cellWidth = (i % 3 == 1) ? 200.0f : 120.0f;
-        float cellHeight = (i < 3) ? 80.0f : ((i < 6) ? 120.0f : 100.0f);
+        int row = i / 3;  // 0, 1, 2
+        int col = i % 3;  // 0, 1, 2
         
-        SDL_FRect buttonRect = {positions[i].x, positions[i].y, cellWidth, cellHeight};
+        float x = GRID_START_X + (col * CELL_SIZE);
+        float y = GRID_START_Y + (row * CELL_SIZE);
+        
+        SDL_FRect buttonRect = {x, y, CELL_SIZE, CELL_SIZE};
         
         // Capture this and i to access buttons vector
         auto buttonCallback = [this, i]() {
             // Only allow clicking empty cells
             if (buttons[i].getText().empty()) {
-                // Set the button text to current player
-                buttons[i].setText(Globals::getPlayer() == "cross" ? "X" : "O");
+                // Get current player symbol
+                std::string playerSymbol = (Globals::getPlayer() == "cross") ? "X" : "O";
                 
-                // TODO: Check for win condition
+                // Set the button text to current player
+                buttons[i].setText(playerSymbol);
+                
+                // Check for win condition
+                if (checkWin(playerSymbol)) {
+                    Globals::setEnding(Globals::getPlayer());
+                    Globals::setScene("ending");
+                    for (int i = 0; i < 9; i++) {
+                        buttons[i].setText("");
+                    }
+                    return;
+                }
+                
+                // Check for draw (all cells filled)
+                bool isFull = true;
+                for (const auto& button : buttons) {
+                    if (button.getText().empty()) {
+                        isFull = false;
+                        break;
+                    }
+                }
+                if (isFull) {
+                    Globals::setEnding("draw");
+                    Globals::setScene("ending");
+                    for (int i = 0; i < 9; i++) {
+                        buttons[i].setText("");
+                    }
+                    return;
+                }
                 
                 // Switch player
                 if (Globals::getPlayer() == "cross") {
@@ -61,7 +70,6 @@ void GameScene::initialise() {
             }
         };
         
-        // Use emplace_back to construct Button in place
         buttons.emplace_back("", buttonRect, buttonCallback);
     }
 }
@@ -72,27 +80,36 @@ void GameScene::initialise() {
 // should a grid be a button?
 void GameScene::render() {
     
-    // display the current player on top!
+    // Display the current player text, centered horizontally
     SDL_Color textColor = { 0, 0, 0 };
     std::ostringstream backgroundText;
     backgroundText << "Current player: " << Globals::getPlayer();
-    // render 3 lines and treat them as buttons
-    // when clicked, show the button text
+    
     if( !background.loadFromRenderedText( backgroundText.str(), textColor ) ) {
         printf( "Failed to render text texture!\n" );
     }
-    background.render( 100, 50 );
+    // Center the text horizontally
+    int textX = (SCREEN_WIDTH - background.getWidth()) / 2;
+    background.render( textX, 50 );
     
-    // renders the grid
+    // Render the grid (300x300 with equal 100x100 cells, centered)
     SDL_SetRenderDrawColor(Globals::getRenderer(), 0, 0, 0, 0);
     
-    // vertical lines
-    SDL_RenderLine(Globals::getRenderer(), 220, 100, 220, 400);
-    SDL_RenderLine(Globals::getRenderer(), 420, 100, 420, 400);
+    // Vertical lines
+    SDL_RenderLine(Globals::getRenderer(), 
+                   GRID_START_X + CELL_SIZE, GRID_START_Y, 
+                   GRID_START_X + CELL_SIZE, GRID_START_Y + GRID_SIZE);
+    SDL_RenderLine(Globals::getRenderer(), 
+                   GRID_START_X + 2 * CELL_SIZE, GRID_START_Y, 
+                   GRID_START_X + 2 * CELL_SIZE, GRID_START_Y + GRID_SIZE);
     
-    // horizontal lines
-    SDL_RenderLine(Globals::getRenderer(), 100, 180, 540, 180);
-    SDL_RenderLine(Globals::getRenderer(), 100, 300, 540, 300);
+    // Horizontal lines
+    SDL_RenderLine(Globals::getRenderer(), 
+                   GRID_START_X, GRID_START_Y + CELL_SIZE, 
+                   GRID_START_X + GRID_SIZE, GRID_START_Y + CELL_SIZE);
+    SDL_RenderLine(Globals::getRenderer(), 
+                   GRID_START_X, GRID_START_Y + 2 * CELL_SIZE, 
+                   GRID_START_X + GRID_SIZE, GRID_START_Y + 2 * CELL_SIZE);
     
     // Render all grid buttons
     for (auto& button : buttons) {
@@ -100,3 +117,39 @@ void GameScene::render() {
     }
 }
 
+bool GameScene::checkWin(const std::string& player) {
+    // Check all rows
+    for (int row = 0; row < 3; row++) {
+        int startIndex = row * 3;  // Row 0: index 0, Row 1: index 3, Row 2: index 6
+        if (buttons[startIndex].getText() == player &&
+            buttons[startIndex + 1].getText() == player &&
+            buttons[startIndex + 2].getText() == player) {
+            return true;
+        }
+    }
+    
+    // Check all columns
+    for (int col = 0; col < 3; col++) {
+        if (buttons[col].getText() == player &&
+            buttons[col + 3].getText() == player &&
+            buttons[col + 6].getText() == player) {
+            return true;
+        }
+    }
+    
+    // Check diagonal (top-left to bottom-right)
+    if (buttons[0].getText() == player &&
+        buttons[4].getText() == player &&
+        buttons[8].getText() == player) {
+        return true;
+    }
+    
+    // Check diagonal (top-right to bottom-left)
+    if (buttons[2].getText() == player &&
+        buttons[4].getText() == player &&
+        buttons[6].getText() == player) {
+        return true;
+    }
+    
+    return false;
+}

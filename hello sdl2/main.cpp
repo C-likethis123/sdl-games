@@ -12,6 +12,7 @@
 #include "scenes/Scene.h"
 #include "scenes/InitialScene.h"
 #include "scenes/GameScene.h"
+#include "scenes/EndingScene.h"
 
 
 /**
@@ -71,28 +72,34 @@ int main(int argc, char* args[]) {
     
     bool quit = false;
     SDL_Event e;
-    uint64_t start_time = SDL_GetTicks();
-    SDL_FRect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-    // TODO render scenes according to scene key
+
     std::unordered_map<std::string, std::unique_ptr<Scene>> scenes;
     scenes["initial"] = std::make_unique<InitialScene>();
     scenes["next"] = std::make_unique<GameScene>();
+    scenes["ending"] = std::make_unique<EndingScene>();
+    
+    std::string previousSceneKey = Globals::getSceneKey();
     
     while (!quit) {
-        Scene& scene = *scenes[Globals::getSceneKey()];
+        std::string currentSceneKey = Globals::getSceneKey();
+        
+        // Detect scene change and call onEnter for EndingScene
+        if (currentSceneKey != previousSceneKey && currentSceneKey == "ending") {
+            EndingScene* endingScene = dynamic_cast<EndingScene*>(scenes["ending"].get());
+            if (endingScene) {
+                endingScene->onEnter();
+            }
+        }
+        previousSceneKey = currentSceneKey;
+        
+        Scene& scene = *scenes[currentSceneKey];
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
             } else {
                 scene.handleEvent(e);
-                
-                if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-                    printf("x: %f, y: %f\n", e.button.x, e.button.y);
-                }
             }
         }
-        
-        // TODO: handle events here
 
         //Clear screen
         SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );

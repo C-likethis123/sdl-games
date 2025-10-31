@@ -24,34 +24,30 @@ Button::Button(const std::string& text, SDL_FRect rect, std::function<void()> fu
 }
 
 void Button::initialise() {
-    // Only render text if it's not empty
     if (!text.empty()) {
         SDL_Color textColor{ 0, 0, 0 };
         if( !textTexture.loadFromRenderedText( text.c_str(), textColor ) )
         {
             printf( "Failed to render text texture!\n" );
         }
-        
-        // When text is present, always auto-size to fit the text
-        // This ensures the clickable area matches the visible text
+
         rect.w = textTexture.getWidth();
         rect.h = textTexture.getHeight();
     }
-    // If text is empty, keep the explicit dimensions provided by constructor
-    // This supports buttons that will have text added later (like tic-tac-toe grid)
 }
 
 void Button::render() {
-    // Only render if there's text to show
     if (!text.empty()) {
-        textTexture.render( rect.x,  rect.y );
+        // Center text within the button rect
+        int textX = rect.x + (rect.w - textTexture.getWidth()) / 2;
+        int textY = rect.y + (rect.h - textTexture.getHeight()) / 2;
+        textTexture.render( textX, textY );
     }
 }
 
 void Button::setText(const std::string& newText) {
     text = newText;
-    
-    // Re-render the text texture
+
     if (!text.empty()) {
         SDL_Color textColor{ 0, 0, 0 };
         if( !textTexture.loadFromRenderedText( text.c_str(), textColor ) )
@@ -59,7 +55,6 @@ void Button::setText(const std::string& newText) {
             printf( "Failed to render text texture!\n" );
         }
     } else {
-        // Clear the texture if text is empty
         textTexture.free();
     }
 }

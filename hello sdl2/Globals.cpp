@@ -72,6 +72,14 @@ const std::string& Globals::getSceneKey() {
     return getInstance().sceneKey;
 }
 
+void Globals::setEnding(const std::string &ending) {
+    getInstance().ending = ending;
+}
+
+const std::string& Globals::getEnding() {
+    return getInstance().ending;
+}
+
 // Get the base path (initializes on first call)
 const char* Globals::getBasePath() {
     if (!basePath) {
