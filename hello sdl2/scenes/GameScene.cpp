@@ -232,6 +232,21 @@ void GameScene::renderTetrisGrid() {
     }
 }
 
+void GameScene::renderScoreBox() {
+    SDL_Renderer* renderer = Globals::getRenderer();
+    SDL_FRect score_box(50, 300, 200, 150);
+    SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
+    SDL_RenderRect(renderer, &score_box);
+    LTexture scoreLabel;
+    if (scoreLabel.loadFromRenderedText("Score", Colors::black)) {
+        scoreLabel.render(100, 320);
+    }
+    LTexture scoreValue;
+    if (scoreValue.loadFromRenderedText(std::format("{}",Globals::getScore()), Colors::black)) {
+        scoreValue.render(100, 350);
+    }
+}
+
 void GameScene::renderNextPiecePreview() {
     SDL_Renderer* renderer = Globals::getRenderer();
  
@@ -241,7 +256,7 @@ void GameScene::renderNextPiecePreview() {
     
     // Draw "NEXT" label
     LTexture nextLabel;
-    if (nextLabel.loadFromRenderedText("NEXT", Colors::black)) {
+    if (nextLabel.loadFromRenderedText("Next", Colors::black)) {
         nextLabel.render(140 - nextLabel.getWidth() / 2, 60);
     }
     
@@ -271,12 +286,7 @@ void GameScene::render() {
     renderNextPiecePreview();
     
     // Render score box
-    SDL_FRect score_box(50, 300, 200, 150);
-    SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
-    SDL_RenderRect(Globals::getRenderer(), &score_box);
-    if (background.loadFromRenderedText(std::format("{}",Globals::getScore()), Colors::black)) {
-        background.render(130, 370);
-    }
+    renderScoreBox();
        
     // Render Tetris grid
     renderTetrisGrid();

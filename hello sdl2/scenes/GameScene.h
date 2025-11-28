@@ -49,6 +49,7 @@ private:
     void lockPiece();
     void renderTetrisGrid();
     void renderNextPiecePreview();
+    void renderScoreBox();
     void updateGravity();
     
     LTexture background;
