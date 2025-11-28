@@ -3,7 +3,7 @@
 ## Overview
 The Tetris system consists of:
 - **Tetra class**: Represents a single Tetris piece (tetromino)
-- **TetrisScene**: Example scene showing how to use Tetra with keyboard controls
+- **GameScene**: Main game scene with Tetris implementation and keyboard controls
 
 ## Tetra Class
 
@@ -94,7 +94,7 @@ bool canMoveDown(Tetra* piece, const Grid& grid) {
 }
 ```
 
-## Arrow Key Controls (in TetrisScene)
+## Arrow Key Controls (in GameScene)
 
 | Key | Action |
 |-----|--------|
@@ -107,11 +107,12 @@ bool canMoveDown(Tetra* piece, const Grid& grid) {
 ## Example: Integrating into Your Game
 
 ```cpp
-// In main.cpp, add TetrisScene to your scene map:
-#include "scenes/TetrisScene.h"
+// GameScene is already the main Tetris implementation
+// In main.cpp, it's registered as:
+#include "scenes/GameScene.h"
 
-scenes["tetris"] = std::make_unique<TetrisScene>();
-Globals::setScene("tetris");
+scenes["next"] = std::make_unique<GameScene>();
+Globals::setScene("next");
 ```
 
 ## Shape Data Structure
@@ -139,9 +140,9 @@ case TetraType::I:
 ```
 
 ### Change Cell Size
-Modify in TetrisScene.h:
+Modify in GameScene.h:
 ```cpp
-static constexpr float CELL_SIZE = 30.0f;  // Change this
+static constexpr float TETRIS_CELL_SIZE = 20.0f;  // Change this
 ```
 
 ### Add More Rotations

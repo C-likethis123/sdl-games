@@ -39,7 +39,7 @@ private:
     std::unique_ptr<Tetra> nextPiece;
     std::vector<std::vector<int>> tetrisGrid;  // 0 = empty, 1 = occupied
     uint64_t lastMoveTime;
-    static constexpr uint64_t MOVE_DELAY_MS = 500;  // Auto-move down every 500ms
+    static constexpr uint64_t MOVE_DELAY_MS = 1000;  // Auto-move down every 1s
     
     // Helper methods
     void spawnNewPiece();

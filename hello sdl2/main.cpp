@@ -81,17 +81,16 @@ int main(int argc, char* args[]) {
             } else {
                 scene.handleEvent(e);
             }
-            //Clear screen
-            SDL_SetRenderDrawColor( Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a );
-            SDL_RenderClear( Globals::getRenderer() );
-            
-            // Update actions and render again
-            scene.render();
-            
-            //Update screen
-            SDL_RenderPresent( Globals::getRenderer() );
-            
         }
+         //Clear screen
+         SDL_SetRenderDrawColor( Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a );
+         SDL_RenderClear( Globals::getRenderer() );
+         
+         // Update actions and render again
+         scene.render();
+         
+         //Update screen
+         SDL_RenderPresent( Globals::getRenderer() );
 
        
 
