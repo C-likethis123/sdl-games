@@ -72,11 +72,9 @@ public:
     static void setScene(const std::string& sceneKey);
     static const std::string& getSceneKey();
     
-    static void setPlayer(const std::string& player);
-    static const std::string& getPlayer();
+    static void setScore(const int& score);
+    static const int getScore();
 
-    static void setEnding(const std::string& ending);
-    static const std::string& getEnding();
     // Cleanup resources (call before SDL_Quit)
     static void cleanup();
 
@@ -91,8 +89,7 @@ private:
     
     const char* basePath;
     std::string sceneKey;
-    std::string ending;
-    std::string player;
+    int score{0};
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> gWindow;
     std::unique_ptr<SDL_Renderer, SDL_RendererDeleter> gRenderer;
     std::unique_ptr<TTF_Font, SDL_FontDeleter> gFont;

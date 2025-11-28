@@ -64,6 +64,15 @@ const std::string& Globals::getSceneKey() {
     return getInstance().sceneKey;
 }
 
+void Globals::setScore(const int& score) {
+    getInstance().score = score;
+}
+
+const int Globals::getScore() {
+    return getInstance().score;
+}
+
+
 // Get the base path (initializes on first call)
 const char* Globals::getBasePath() {
     if (!basePath) {

@@ -35,7 +35,7 @@ class Scene {
         
         virtual void initialise() = 0;  // Pure virtual - must be implemented by derived classes
         virtual void render() = 0;      // Pure virtual - must be implemented by derived classes
-        void handleEvent(SDL_Event& e);
+        virtual void handleEvent(SDL_Event& e);  // Virtual so scenes can override
         static const int SCREEN_WIDTH = 640;
         static const int SCREEN_HEIGHT = 480;
     protected:

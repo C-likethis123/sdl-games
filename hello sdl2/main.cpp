@@ -8,7 +8,8 @@
 
 #include "Globals.h"
 #include "scenes/Scene.h"
-
+#include "scenes/InitialScene.h"
+#include "scenes/GameScene.h"
 
 /**
  
@@ -64,6 +65,8 @@ int main(int argc, char* args[]) {
     SDL_Event e;
 
     std::unordered_map<std::string, std::unique_ptr<Scene>> scenes;
+    scenes.emplace("initial", std::make_unique<InitialScene>());
+    scenes.emplace("next", std::make_unique<GameScene>());
     
     std::string previousSceneKey = Globals::getSceneKey();
     
@@ -77,18 +80,19 @@ int main(int argc, char* args[]) {
             } else {
                 scene.handleEvent(e);
             }
+            //Clear screen
+            SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );
+            SDL_RenderClear( Globals::getRenderer() );
+            
+            // Update actions and render again
+            scene.render();
+            
+            //Update screen
+            SDL_RenderPresent( Globals::getRenderer() );
+            
         }
 
-        //Clear screen
-        SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );
-        SDL_RenderClear( Globals::getRenderer() );
-        
-        // Update actions and render again
-        scene.render();
-        
-        //Update screen
-        SDL_RenderPresent( Globals::getRenderer() );
-        
+       
 
     }
    
