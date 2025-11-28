@@ -36,16 +36,19 @@ private:
     
     // Tetris state
     std::unique_ptr<Tetra> currentPiece;
+    std::unique_ptr<Tetra> nextPiece;
     std::vector<std::vector<int>> tetrisGrid;  // 0 = empty, 1 = occupied
     uint64_t lastMoveTime;
     static constexpr uint64_t MOVE_DELAY_MS = 500;  // Auto-move down every 500ms
     
     // Helper methods
     void spawnNewPiece();
+    TetraType getRandomTetraType();
     bool canMove(int deltaX, int deltaY);
     bool canRotate(bool clockwise);
     void lockPiece();
     void renderTetrisGrid();
+    void renderNextPiecePreview();
     void updateGravity();
     
     LTexture background;

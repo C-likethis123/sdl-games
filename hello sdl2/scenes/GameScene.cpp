@@ -18,23 +18,31 @@ GameScene::GameScene() : lastMoveTime(0) {
 }
 
 void GameScene::initialise() {
+    // Generate first piece and next piece
+    nextPiece = std::make_unique<Tetra>(getRandomTetraType(), 0, 0);
     spawnNewPiece();
     lastMoveTime = SDL_GetTicks();
 }
 
-void GameScene::spawnNewPiece() {
-    // Randomly select a piece type
+TetraType GameScene::getRandomTetraType() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_int_distribution<> dis(0, 6);
     
-    TetraType type = static_cast<TetraType>(dis(gen));
+    return static_cast<TetraType>(dis(gen));
+}
+
+void GameScene::spawnNewPiece() {
+    if (nextPiece) {
+        // Move next piece to current piece position
+        int startX = TETRIS_GRID_WIDTH / 2 - 2;
+        int startY = 0;
+        
+        currentPiece = std::make_unique<Tetra>(nextPiece->getType(), startX, startY);
+    }
     
-    // Spawn at top center of grid
-    int startX = TETRIS_GRID_WIDTH / 2 - 2;
-    int startY = 0;
-    
-    currentPiece = std::make_unique<Tetra>(type, startX, startY);
+    // Generate new next piece (positioned at 0,0 for preview, will be repositioned when spawned)
+    nextPiece = std::make_unique<Tetra>(getRandomTetraType(), 0, 0);
 }
 
 void GameScene::handleEvent(SDL_Event& e) {
@@ -223,24 +231,52 @@ void GameScene::renderTetrisGrid() {
     }
 }
 
-void GameScene::render() {
-    SDL_FRect next_box(50, 50, 200, 150);
-    SDL_SetRenderDrawColor(Globals::getRenderer(), 0, 0, 0, 255);
-    SDL_RenderRect(Globals::getRenderer(), &next_box);
-    currentPiece->render(Globals::getRenderer(), TETRIS_CELL_SIZE,
-                        50, 50);
+void GameScene::renderNextPiecePreview() {
+    SDL_Renderer* renderer = Globals::getRenderer();
 
+    SDL_FRect next_box(50, 50, 200, 150);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderRect(renderer, &next_box);
+    
+    // Draw "NEXT" label
+    SDL_Color textColor{0, 0, 0};
+    LTexture nextLabel;
+    if (nextLabel.loadFromRenderedText("NEXT", textColor)) {
+        nextLabel.render(140 - nextLabel.getWidth() / 2, 60);
+    }
+    
+    if (nextPiece) {
+        // Calculate center position for the preview piece
+        // Preview cell size (larger for visibility)
+        float previewCellSize = 20.0f;
+        
+        // Center the piece in the box
+        // Box center: 150 (50 + 200/2), 125 (50 + 150/2)
+        float boxCenterX = 150.0f;
+        float boxCenterY = 125.0f;
+        
+        // Offset to center the 4x4 piece grid
+        float previewStartX = boxCenterX - (4 * previewCellSize) / 2.0f;
+        float previewStartY = boxCenterY - (4 * previewCellSize) / 2.0f;
+        
+        nextPiece->render(renderer, previewCellSize, previewStartX, previewStartY);
+    }
+}
+
+void GameScene::render() {
     // Update gravity
     updateGravity();
     
+    // Render next piece preview box
+    renderNextPiecePreview();
     
+    // Render score box
     SDL_FRect score_box(50, 300, 200, 150);
     SDL_SetRenderDrawColor(Globals::getRenderer(), 0, 0, 0, 255);
     SDL_RenderRect(Globals::getRenderer(), &score_box);
     if (background.loadFromRenderedText(std::format("{}",Globals::getScore()), SDL_Color(0,0,0))) {
         background.render(130, 370);
     }
-
        
     // Render Tetris grid
     renderTetrisGrid();
@@ -250,7 +286,4 @@ void GameScene::render() {
         currentPiece->render(Globals::getRenderer(), TETRIS_CELL_SIZE, 
                             TETRIS_GRID_START_X, TETRIS_GRID_START_Y);
     }
-    
-    // TODO: Render title
-//    titleText << "Tetris - Arrow Keys: Move | Space/Up: Rotate | Z: Rotate CCW";
 }
