@@ -6,6 +6,7 @@
 //
 
 #include "Tetra.h"
+#include "Colors.h"
 
 // I-piece (Cyan) - Straight line
 // Rotations: 0 = horizontal, 1 = vertical, 2 = horizontal, 3 = vertical
@@ -212,25 +213,25 @@ Tetra::Tetra(TetraType type, int gridX, int gridY)
 void Tetra::setColorForType() {
     switch (type) {
         case TetraType::I:
-            color = {0, 255, 255, 255};    // Cyan
+            color = Colors::cyan;
             break;
         case TetraType::O:
-            color = {255, 255, 0, 255};    // Yellow
+            color = Colors::yellow;
             break;
         case TetraType::T:
-            color = {128, 0, 128, 255};    // Purple
+            color = Colors::purple;
             break;
         case TetraType::S:
-            color = {0, 255, 0, 255};      // Green
+            color = Colors::green;
             break;
         case TetraType::Z:
-            color = {255, 0, 0, 255};      // Red
+            color = Colors::red;
             break;
         case TetraType::J:
-            color = {0, 0, 255, 255};      // Blue
+            color = Colors::blue;
             break;
         case TetraType::L:
-            color = {255, 165, 0, 255};    // Orange
+            color = Colors::orange;
             break;
     }
 }
@@ -270,7 +271,7 @@ void Tetra::render(SDL_Renderer* renderer, float cellSize, float gridStartX, flo
                 SDL_RenderFillRect(renderer, &rect);
                 
                 // Draw border for better visibility
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
                 SDL_RenderRect(renderer, &rect);
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
             }

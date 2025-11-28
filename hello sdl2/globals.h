@@ -100,5 +100,4 @@ inline std::filesystem::path getResourcePath(const std::string& filename) {
     return Globals::getInstance().getResourcePath(filename);
 }
 
-
 #endif // GLOBALS_H

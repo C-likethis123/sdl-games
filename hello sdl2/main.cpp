@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Globals.h"
+#include "Colors.h"
 #include "scenes/Scene.h"
 #include "scenes/InitialScene.h"
 #include "scenes/GameScene.h"
@@ -39,7 +40,7 @@ bool initialise() {
     }
     
 
-    SDL_SetRenderDrawColor(Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a);
 
     return true;
 }
@@ -57,7 +58,7 @@ int main(int argc, char* args[]) {
     if (!initialise()) return 1;
 
     // Clear screen to white
-    SDL_SetRenderDrawColor(Globals::getRenderer(), 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a);
     SDL_RenderClear(Globals::getRenderer());
 
     
@@ -81,7 +82,7 @@ int main(int argc, char* args[]) {
                 scene.handleEvent(e);
             }
             //Clear screen
-            SDL_SetRenderDrawColor( Globals::getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF );
+            SDL_SetRenderDrawColor( Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a );
             SDL_RenderClear( Globals::getRenderer() );
             
             // Update actions and render again

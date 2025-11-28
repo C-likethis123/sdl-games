@@ -7,6 +7,7 @@
 
 #include "GameScene.h"
 #include "../Globals.h"
+#include "../Colors.h"
 #include <format>
 #include <random>
 #include <sstream>
@@ -186,14 +187,14 @@ void GameScene::renderTetrisGrid() {
     SDL_Renderer* renderer = Globals::getRenderer();
     
     // Draw grid background
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::gridDark.r, Colors::gridDark.g, Colors::gridDark.b, Colors::gridDark.a);
     SDL_FRect gridRect = {TETRIS_GRID_START_X, TETRIS_GRID_START_Y, 
                           TETRIS_GRID_WIDTH * TETRIS_CELL_SIZE, 
                           TETRIS_GRID_HEIGHT * TETRIS_CELL_SIZE};
     SDL_RenderFillRect(renderer, &gridRect);
     
     // Draw grid lines
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::gridLine.r, Colors::gridLine.g, Colors::gridLine.b, Colors::gridLine.a);
     
     // Vertical lines
     for (int i = 0; i <= TETRIS_GRID_WIDTH; i++) {
@@ -210,7 +211,7 @@ void GameScene::renderTetrisGrid() {
     }
     
     // Draw locked pieces
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
     for (int row = 0; row < TETRIS_GRID_HEIGHT; row++) {
         for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
             if (tetrisGrid[row][col] == 1) {
@@ -223,9 +224,9 @@ void GameScene::renderTetrisGrid() {
                 SDL_RenderFillRect(renderer, &cellRect);
                 
                 // Draw border
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
                 SDL_RenderRect(renderer, &cellRect);
-                SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+                SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
             }
         }
     }
@@ -233,15 +234,14 @@ void GameScene::renderTetrisGrid() {
 
 void GameScene::renderNextPiecePreview() {
     SDL_Renderer* renderer = Globals::getRenderer();
-
+ 
     SDL_FRect next_box(50, 50, 200, 150);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
     SDL_RenderRect(renderer, &next_box);
     
     // Draw "NEXT" label
-    SDL_Color textColor{0, 0, 0};
     LTexture nextLabel;
-    if (nextLabel.loadFromRenderedText("NEXT", textColor)) {
+    if (nextLabel.loadFromRenderedText("NEXT", Colors::black)) {
         nextLabel.render(140 - nextLabel.getWidth() / 2, 60);
     }
     
@@ -272,9 +272,9 @@ void GameScene::render() {
     
     // Render score box
     SDL_FRect score_box(50, 300, 200, 150);
-    SDL_SetRenderDrawColor(Globals::getRenderer(), 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
     SDL_RenderRect(Globals::getRenderer(), &score_box);
-    if (background.loadFromRenderedText(std::format("{}",Globals::getScore()), SDL_Color(0,0,0))) {
+    if (background.loadFromRenderedText(std::format("{}",Globals::getScore()), Colors::black)) {
         background.render(130, 370);
     }
        

@@ -7,12 +7,14 @@
 
 #include "InitialScene.h"
 #include "../Globals.h"
+#include "../Colors.h"
+
 InitialScene::InitialScene() {
     initialise();
 }
 
 void InitialScene::initialise() {
-    if (!background.loadFromRenderedText("Tetris", SDL_Color{0,0,0})) {
+    if (!background.loadFromRenderedText("Tetris", Colors::black)) {
         SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Error logging background text: Tetris, %s", SDL_GetError());
     }
     buttons.emplace_back("Start", SDL_FRect{(SCREEN_WIDTH - background.getWidth()) / 2, (SCREEN_HEIGHT - 30) / 4 * 3, background.getWidth(), 30}, []() {

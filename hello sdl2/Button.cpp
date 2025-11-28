@@ -7,6 +7,7 @@
 
 #include "Button.h"
 #include "Globals.h"
+#include "Colors.h"
 #include <SDL3/SDL_main.h>
 
 void Button::onClick() {
@@ -36,8 +37,7 @@ Button::Button(const std::string& text, SDL_FRect rect, std::function<void()> fu
 
 void Button::initialise() {
     if (!text.empty()) {
-        SDL_Color textColor{ 0, 0, 0 };
-        if( !textTexture.loadFromRenderedText( text.c_str(), textColor ) )
+        if( !textTexture.loadFromRenderedText( text.c_str(), Colors::black ) )
         {
             printf( "Failed to render text texture!\n" );
         }
@@ -50,9 +50,9 @@ void Button::initialise() {
 void Button::render() {
     // Draw hover background if hovered and cell is empty
     if (isHovered && text.empty()) {
-        SDL_SetRenderDrawColor(Globals::getRenderer(), 173, 216, 230, 255);  // Light blue
+        SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::hoverBlue.r, Colors::hoverBlue.g, Colors::hoverBlue.b, Colors::hoverBlue.a);
     } else {
-        SDL_SetRenderDrawColor(Globals::getRenderer(), 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a);
     }
     SDL_RenderFillRect(Globals::getRenderer(), &rect);
     
@@ -68,8 +68,7 @@ void Button::setText(const std::string& newText) {
     text = newText;
 
     if (!text.empty()) {
-        SDL_Color textColor{ 0, 0, 0 };
-        if( !textTexture.loadFromRenderedText( text.c_str(), textColor ) )
+        if( !textTexture.loadFromRenderedText( text.c_str(), Colors::black ) )
         {
             printf( "Failed to render text texture!\n" );
         }

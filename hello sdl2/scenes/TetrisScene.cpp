@@ -7,6 +7,7 @@
 
 #include "TetrisScene.h"
 #include "../Globals.h"
+#include "../Colors.h"
 #include <random>
 
 TetrisScene::TetrisScene() {
@@ -159,13 +160,13 @@ void TetrisScene::renderGrid() {
     SDL_Renderer* renderer = Globals::getRenderer();
     
     // Draw grid background
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::gridDark.r, Colors::gridDark.g, Colors::gridDark.b, Colors::gridDark.a);
     SDL_FRect gridRect = {GRID_START_X, GRID_START_Y, 
                           GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE};
     SDL_RenderFillRect(renderer, &gridRect);
     
     // Draw grid lines
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::gridLine.r, Colors::gridLine.g, Colors::gridLine.b, Colors::gridLine.a);
     
     // Vertical lines
     for (int i = 0; i <= GRID_WIDTH; i++) {
@@ -182,7 +183,7 @@ void TetrisScene::renderGrid() {
     }
     
     // Draw locked pieces
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
     for (int row = 0; row < GRID_HEIGHT; row++) {
         for (int col = 0; col < GRID_WIDTH; col++) {
             if (grid[row][col] == 1) {
@@ -195,9 +196,9 @@ void TetrisScene::renderGrid() {
                 SDL_RenderFillRect(renderer, &cellRect);
                 
                 // Draw border
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
                 SDL_RenderRect(renderer, &cellRect);
-                SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+                SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
             }
         }
     }
@@ -210,12 +211,5 @@ void TetrisScene::render() {
     if (currentPiece) {
         currentPiece->render(Globals::getRenderer(), CELL_SIZE, GRID_START_X, GRID_START_Y);
     }
-    
-    // Render title
-    SDL_Color textColor = { 255, 255, 255 };
-    if (!background.loadFromRenderedText("Tetris - Arrow Keys to Move, Space to Rotate", textColor)) {
-        printf("Failed to render text texture!\n");
-    }
-    background.render((SCREEN_WIDTH - background.getWidth()) / 2, 10);
 }
 
