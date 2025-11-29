@@ -65,6 +65,8 @@ private:
     void renderNextPiecePreview();
     void renderScoreBox();
     void updateGravity();
+    int calculateGhostPieceY();
+    void renderGhostPiece();
     
     LTexture background;
 };

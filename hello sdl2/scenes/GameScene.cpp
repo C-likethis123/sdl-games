@@ -299,6 +299,82 @@ void GameScene::updateGravity() {
     }
 }
 
+int GameScene::calculateGhostPieceY() {
+    if (!currentPiece) return 0;
+    
+    int ghostY = currentPiece->getY();
+    const auto& shape = currentPiece->getShape();
+    int currentX = currentPiece->getX();
+    
+    // Keep moving down until we can't anymore
+    while (true) {
+        bool canMoveDown = true;
+        
+        // Check each cell of the piece at the next position
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                if (shape[row][col] == 1) {
+                    int x = currentX + col;
+                    int y = ghostY + row + 1;  // Check one position down
+                    
+                    // Check boundaries
+                    if (y >= TETRIS_GRID_HEIGHT) {
+                        canMoveDown = false;
+                        break;
+                    }
+                    
+                    // Check collision with locked pieces
+                    if (y >= 0 && x >= 0 && x < TETRIS_GRID_WIDTH && tetrisGrid[y][x] == 1) {
+                        canMoveDown = false;
+                        break;
+                    }
+                }
+            }
+            if (!canMoveDown) break;
+        }
+        
+        if (!canMoveDown) {
+            break;
+        }
+        
+        ghostY++;
+    }
+    
+    return ghostY;
+}
+
+void GameScene::renderGhostPiece() {
+    if (!currentPiece || isClearing) return;
+    
+    SDL_Renderer* renderer = Globals::getRenderer();
+    int ghostY = calculateGhostPieceY();
+    
+    // Only render if ghost piece is different from current piece position
+    if (ghostY == currentPiece->getY()) {
+        return;
+    }
+    
+    // Get the current piece's shape and color
+    const auto& shape = currentPiece->getShape();
+    SDL_Color color = currentPiece->getColor();
+    
+    // Render ghost piece as outlined rectangles (not filled)
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 128);  // Semi-transparent
+    
+    for (int row = 0; row < 4; row++) {
+        for (int col = 0; col < 4; col++) {
+            if (shape[row][col] == 1) {
+                float x = TETRIS_GRID_START_X + (currentPiece->getX() + col) * TETRIS_CELL_SIZE;
+                float y = TETRIS_GRID_START_Y + (ghostY + row) * TETRIS_CELL_SIZE;
+                
+                // Draw ghost piece
+                SDL_FRect rect{x + 2, y + 2, TETRIS_CELL_SIZE - 4, TETRIS_CELL_SIZE - 4};
+                SDL_RenderRect(renderer, &rect);
+            }
+        }
+    }
+}
+
 void GameScene::renderTetrisGrid() {
     SDL_Renderer* renderer = Globals::getRenderer();
     
@@ -441,6 +517,9 @@ void GameScene::render() {
        
     // Render Tetris grid
     renderTetrisGrid();
+    
+    // Render ghost piece (before rendering current piece so it appears behind)
+    renderGhostPiece();
     
     // Render current piece (only if not clearing lines)
     if (currentPiece && !isClearing) {
