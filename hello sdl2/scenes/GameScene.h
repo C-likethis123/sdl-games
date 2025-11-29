@@ -52,7 +52,6 @@ private:
     bool canMove(int deltaX, int deltaY);
     bool rotateIfValid(bool clockwise);
     void hardDrop();
-    void updateLineClearAnimation(); // TODO: Needs refactoring
     void updateGravity();
     
     LTexture background;

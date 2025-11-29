@@ -220,23 +220,6 @@ void GameScene::hardDrop() {
     lastMoveTime = SDL_GetTicks();
 }
 
-void GameScene::updateLineClearAnimation() {
-    // TODO: Animation logic needs to be properly refactored
-    // Commenting out for now as variables moved to TetrisGrid
-//    if (!isClearing) return;
-//    
-//    uint64_t currentTime = SDL_GetTicks();
-//    uint64_t elapsed = currentTime - clearStartTime;
-//    
-//    // Check if enough time has passed for next blink
-//    int currentBlinkPhase = elapsed / BLINK_INTERVAL_MS;
-//    
-//    if (currentBlinkPhase >= TOTAL_BLINKS) {
-//        // Animation complete, remove lines
-//        removeLines(linesToClear);
-//    }
-}
-
 void GameScene::updateGravity() {
     // Don't update if no current piece (e.g., during game over)
     if (!currentPiece) return;
@@ -262,16 +245,7 @@ void GameScene::updateGravity() {
     }
 }
 
-// calculateGhostPieceY() and renderGhostPiece() moved to GhostPieceRenderer component
-
-// renderScoreBox() moved to ScoreBox component
-
-// renderNextPiecePreview() moved to NextPiecePreview component
-
 void GameScene::render() {
-    // Update line clearing animation
-    updateLineClearAnimation();
-    
     // Update gravity (only if not clearing)
     updateGravity();
     
