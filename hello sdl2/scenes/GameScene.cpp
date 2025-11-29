@@ -12,7 +12,8 @@
 #include <random>
 #include <sstream>
 
-GameScene::GameScene() : lastMoveTime(0) {
+GameScene::GameScene() 
+    : lastMoveTime(0), scoreBox(50, 300, 200, 150) {
     // Initialize Tetris grid with all empty cells
     initialise();
 }
@@ -212,19 +213,7 @@ void GameScene::hardDrop() {
     // Reset gravity timer
     lastMoveTime = SDL_GetTicks();
 }
-
-
-
-void GameScene::removeLines(const std::vector<int>& lines) {
-    // TODO: This should be refactored to use tetrisGrid.removeLines()
-    // For now, delegate to TetrisGrid
-    tetrisGrid.removeLines(lines);
-    
-    // Add score (10 points per line)
-    
-    // Spawn new piece
-    spawnNewPiece();
-}
+// removeLines() moved to TetrisGrid
 
 void GameScene::updateLineClearAnimation() {
     // TODO: Animation logic needs to be properly refactored
@@ -345,20 +334,7 @@ void GameScene::renderGhostPiece() {
     }
 }
 
-void GameScene::renderScoreBox() {
-    SDL_Renderer* renderer = Globals::getRenderer();
-    SDL_FRect score_box(50, 300, 200, 150);
-    SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
-    SDL_RenderRect(renderer, &score_box);
-    LTexture scoreLabel;
-    if (scoreLabel.loadFromRenderedText("Score", Colors::black)) {
-        scoreLabel.render(100, 320);
-    }
-    LTexture scoreValue;
-    if (scoreValue.loadFromRenderedText(std::format("{}",Globals::getScore()), Colors::black)) {
-        scoreValue.render(100, 350);
-    }
-}
+// renderScoreBox() moved to ScoreBox component
 
 void GameScene::renderNextPiecePreview() {
     SDL_Renderer* renderer = Globals::getRenderer();
@@ -402,7 +378,7 @@ void GameScene::render() {
     renderNextPiecePreview();
     
     // Render score box
-    renderScoreBox();
+    scoreBox.render(Globals::getScore());
        
     // Render Tetris grid
     tetrisGrid.render();

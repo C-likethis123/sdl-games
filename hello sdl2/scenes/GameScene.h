@@ -17,6 +17,7 @@
 #include "../Texture.h"
 #include <SDL3/SDL_main.h>
 #include "../TetrisGrid.h"
+#include "../ScoreBox.h"
 
 class GameScene : public Scene {
 public:
@@ -29,6 +30,9 @@ public:
 private:
     // Tetris grid configuration
     TetrisGrid tetrisGrid;
+    
+    // UI components
+    ScoreBox scoreBox;
     
     // Tetris state
     std::unique_ptr<Tetra> currentPiece;
@@ -44,10 +48,8 @@ private:
     bool canMove(int deltaX, int deltaY);
     bool rotateIfValid(bool clockwise);
     void hardDrop();
-    void removeLines(const std::vector<int>& lines); // TODO: Should be fully in TetrisGrid
     void updateLineClearAnimation(); // TODO: Needs refactoring
     void renderNextPiecePreview();
-    void renderScoreBox();
     void updateGravity();
     int calculateGhostPieceY();
     void renderGhostPiece();
