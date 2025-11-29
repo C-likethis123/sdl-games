@@ -13,7 +13,9 @@
 #include <sstream>
 
 GameScene::GameScene() 
-    : lastMoveTime(0), scoreBox(50, 300, 200, 150) {
+    : lastMoveTime(0), 
+      scoreBox(50, 300, 200, 150),
+      nextPiecePreview(50, 50, 200, 150) {
     // Initialize Tetris grid with all empty cells
     initialise();
 }
@@ -343,36 +345,7 @@ void GameScene::renderGhostPiece() {
 
 // renderScoreBox() moved to ScoreBox component
 
-void GameScene::renderNextPiecePreview() {
-    SDL_Renderer* renderer = Globals::getRenderer();
- 
-    SDL_FRect next_box(50, 50, 200, 150);
-    SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
-    SDL_RenderRect(renderer, &next_box);
-    
-    // Draw "NEXT" label
-    LTexture nextLabel;
-    if (nextLabel.loadFromRenderedText("Next", Colors::black)) {
-        nextLabel.render(140 - nextLabel.getWidth() / 2, 60);
-    }
-    
-    if (nextPiece) {
-        // Calculate center position for the preview piece
-        // Preview cell size (larger for visibility)
-        float previewCellSize = 20.0f;
-        
-        // Center the piece in the box
-        // Box center: 150 (50 + 200/2), 125 (50 + 150/2)
-        float boxCenterX = 150.0f;
-        float boxCenterY = 125.0f;
-        
-        // Offset to center the 4x4 piece grid
-        float previewStartX = boxCenterX - (4 * previewCellSize) / 2.0f;
-        float previewStartY = boxCenterY - (4 * previewCellSize) / 2.0f;
-        
-        nextPiece->render(renderer, previewCellSize, previewStartX, previewStartY);
-    }
-}
+// renderNextPiecePreview() moved to NextPiecePreview component
 
 void GameScene::render() {
     // Update line clearing animation
@@ -382,7 +355,7 @@ void GameScene::render() {
     updateGravity();
     
     // Render next piece preview box
-    renderNextPiecePreview();
+    nextPiecePreview.render(nextPiece.get());
     
     // Render score box
     scoreBox.render(Globals::getScore());

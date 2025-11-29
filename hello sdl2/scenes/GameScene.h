@@ -18,6 +18,7 @@
 #include <SDL3/SDL_main.h>
 #include "../TetrisGrid.h"
 #include "../ScoreBox.h"
+#include "../NextPiecePreview.h"
 
 class GameScene : public Scene {
 public:
@@ -33,6 +34,7 @@ private:
     
     // UI components
     ScoreBox scoreBox;
+    NextPiecePreview nextPiecePreview;
     
     // Tetris state
     std::unique_ptr<Tetra> currentPiece;
@@ -49,7 +51,6 @@ private:
     bool rotateIfValid(bool clockwise);
     void hardDrop();
     void updateLineClearAnimation(); // TODO: Needs refactoring
-    void renderNextPiecePreview();
     void updateGravity();
     int calculateGhostPieceY();
     void renderGhostPiece();
