@@ -16,6 +16,7 @@
 #include <memory>
 #include "../Texture.h"
 #include <SDL3/SDL_main.h>
+#include "../TetrisGrid.h"
 
 class GameScene : public Scene {
 public:
@@ -24,45 +25,27 @@ public:
     void initialise() override;
     void render() override;
     void handleEvent(SDL_Event& e) override;
-    void reset();  // Reset game state
     
 private:
     // Tetris grid configuration
-    static constexpr int TETRIS_GRID_WIDTH = 15;
-    static constexpr int TETRIS_GRID_HEIGHT = 20;
-    static constexpr float TETRIS_CELL_SIZE = 20.0f;
-    
-    const float TETRIS_GRID_START_X = 300.0f;
-    const float TETRIS_GRID_START_Y = 50.0f;
+    TetrisGrid tetrisGrid;
     
     // Tetris state
     std::unique_ptr<Tetra> currentPiece;
     std::unique_ptr<Tetra> nextPiece;
-    std::vector<std::vector<int>> tetrisGrid;  // 0 = empty, 1 = occupied
     uint64_t lastMoveTime;
     static constexpr uint64_t MOVE_DELAY_MS = 1000;  // Auto-move down every 1s
-    
-    // Line clearing state
-    bool isClearing;
-    std::vector<int> linesToClear;
-    uint64_t clearStartTime;
-    int blinkCount;
-    static constexpr uint64_t BLINK_INTERVAL_MS = 150;  // Blink every 150ms
-    static constexpr int TOTAL_BLINKS = 8;  // Blink 8 times before clearing
 
     // Helper methods
+    void reset();
     bool checkGameOver();
     void spawnNewPiece();
     TetraType getRandomTetraType();
     bool canMove(int deltaX, int deltaY);
     bool rotateIfValid(bool clockwise);
     void hardDrop();
-    void lockPiece();
-    void checkAndClearLines();
-    std::vector<int> findCompleteLines();
-    void removeLines(const std::vector<int>& lines);
-    void updateLineClearAnimation();
-    void renderTetrisGrid();
+    void removeLines(const std::vector<int>& lines); // TODO: Should be fully in TetrisGrid
+    void updateLineClearAnimation(); // TODO: Needs refactoring
     void renderNextPiecePreview();
     void renderScoreBox();
     void updateGravity();

@@ -38,6 +38,14 @@ public:
     void moveRight();
     void moveDown();
     
+    // Setters
+    void setPosition(int x, int y) {
+        gridX = x;
+        gridY = y;
+    }
+    void setX(int x) { gridX = x; }
+    void setY(int y) { gridY = y; }
+    
     // Getters
     TetraType getType() const { return type; }
     int getRotation() const { return rotation; }
