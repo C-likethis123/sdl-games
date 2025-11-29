@@ -24,6 +24,7 @@ public:
     void initialise() override;
     void render() override;
     void handleEvent(SDL_Event& e) override;
+    void reset();  // Reset game state
     
 private:
     // Tetris grid configuration
@@ -48,8 +49,9 @@ private:
     int blinkCount;
     static constexpr uint64_t BLINK_INTERVAL_MS = 150;  // Blink every 150ms
     static constexpr int TOTAL_BLINKS = 8;  // Blink 8 times before clearing
-    
+
     // Helper methods
+    bool checkGameOver();
     void spawnNewPiece();
     TetraType getRandomTetraType();
     bool canMove(int deltaX, int deltaY);

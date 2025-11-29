@@ -25,6 +25,25 @@ void GameScene::initialise() {
     lastMoveTime = SDL_GetTicks();
 }
 
+void GameScene::reset() {
+    // Clear the grid
+    for (int row = 0; row < TETRIS_GRID_HEIGHT; row++) {
+        for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
+            tetrisGrid[row][col] = 0;
+        }
+    }
+    
+    // Reset game state
+    isClearing = false;
+    linesToClear.clear();
+    
+    // Reset score
+    Globals::setScore(0);
+    
+    // Restart game
+    initialise();
+}
+
 TetraType GameScene::getRandomTetraType() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -40,17 +59,41 @@ void GameScene::spawnNewPiece() {
         int startY = 0;
         
         currentPiece = std::make_unique<Tetra>(nextPiece->getType(), startX, startY);
+        
+        // Check if the newly spawned piece collides with existing pieces (game over)
+        if (checkGameOver()) {
+            Globals::setScene("gameover");
+            reset();
+            return;
+        }
     }
     
     // Generate new next piece (positioned at 0,0 for preview, will be repositioned when spawned)
     nextPiece = std::make_unique<Tetra>(getRandomTetraType(), 0, 0);
 }
 
+bool GameScene::checkGameOver() {
+    if (!currentPiece) return false;
+    
+    auto cells = currentPiece->getOccupiedCells();
+    
+    for (const auto& [x, y] : cells) {
+        // Check if any cell of the new piece overlaps with locked pieces
+        if (y >= 0 && y < TETRIS_GRID_HEIGHT && x >= 0 && x < TETRIS_GRID_WIDTH) {
+            if (tetrisGrid[y][x] == 1) {
+                return true;  // Game over!
+            }
+        }
+    }
+    
+    return false;
+}
+
 void GameScene::handleEvent(SDL_Event& e) {
     // Call parent's handleEvent for button handling
     Scene::handleEvent(e);
     
-    // Handle keyboard input for tetris controls
+    // Handle keyboard input
     if (e.type == SDL_EVENT_KEY_DOWN) {
         switch (e.key.key) {
             case SDLK_LEFT:
@@ -241,7 +284,6 @@ void GameScene::updateLineClearAnimation() {
 }
 
 void GameScene::updateGravity() {
-    // Don't update gravity while clearing lines
     if (isClearing) return;
     
     uint64_t currentTime = SDL_GetTicks();

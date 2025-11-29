@@ -11,6 +11,7 @@
 #include "scenes/Scene.h"
 #include "scenes/InitialScene.h"
 #include "scenes/GameScene.h"
+#include "scenes/GameOverScene.h"
 
 /**
  
@@ -68,6 +69,7 @@ int main(int argc, char* args[]) {
     std::unordered_map<std::string, std::unique_ptr<Scene>> scenes;
     scenes.emplace("initial", std::make_unique<InitialScene>());
     scenes.emplace("next", std::make_unique<GameScene>());
+    scenes.emplace("gameover", std::make_unique<GameOverScene>());
     
     std::string previousSceneKey = Globals::getSceneKey();
     
@@ -91,9 +93,6 @@ int main(int argc, char* args[]) {
          
          //Update screen
          SDL_RenderPresent( Globals::getRenderer() );
-
-       
-
     }
    
 
