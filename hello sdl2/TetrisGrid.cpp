@@ -47,9 +47,20 @@ std::vector<int> TetrisGrid::findCompleteLines() {
 }
 
 void TetrisGrid::removeLines(const std::vector<int>& lines) {
-    for (int row : lines) {
+    // Remove lines from bottom to top to avoid index issues
+    for (auto it = lines.rbegin(); it != lines.rend(); ++it) {
+        int lineToRemove = *it;
+        
+        // Shift everything above the removed line down by one row
+        for (int row = lineToRemove; row > 0; row--) {
+            for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
+                tetrisGrid[row][col] = tetrisGrid[row - 1][col];
+            }
+        }
+        
+        // Clear the top row
         for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
-            tetrisGrid[row][col] = 0;
+            tetrisGrid[0][col] = 0;
         }
     }
 }

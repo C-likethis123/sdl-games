@@ -203,45 +203,17 @@ void GameScene::hardDrop() {
     // Check for lines and clear them
     auto lines = tetrisGrid.findCompleteLines();
     if (!lines.empty()) {
-        removeLines(lines);
-    } else {
-        spawnNewPiece();
+        tetrisGrid.removeLines(lines);
+        Globals::setScore(Globals::getScore() + lines.size() * 10);
+
     }
-    
+    spawnNewPiece();
+
     // Reset gravity timer
     lastMoveTime = SDL_GetTicks();
 }
 
-//void GameScene::lockPiece() {
-//    if (!currentPiece) return;
-//    
-//    // Lock the piece into the grid
-//    auto cells = currentPiece->getOccupiedCells();
-//    for (const auto& [x, y] : cells) {
-//        if (y >= 0 && y < TETRIS_GRID_HEIGHT && x >= 0 && x < TETRIS_GRID_WIDTH) {
-//            tetrisGrid[y][x] = 1;
-//        }
-//    }
-//    
-//    // Check for complete lines
-//    checkAndClearLines();
-//}
 
-//void GameScene::checkAndClearLines() {
-//    linesToClear = findCompleteLines();
-//    
-//    if (!linesToClear.empty()) {
-//        // Start line clearing animation
-//        isClearing = true;
-//        clearStartTime = SDL_GetTicks();
-//        blinkCount = 0;
-//    } else {
-//        // No lines to clear, spawn new piece immediately
-//        spawnNewPiece();
-//    }
-//}
-
-// findCompleteLines() moved to TetrisGrid
 
 void GameScene::removeLines(const std::vector<int>& lines) {
     // TODO: This should be refactored to use tetrisGrid.removeLines()
@@ -249,7 +221,6 @@ void GameScene::removeLines(const std::vector<int>& lines) {
     tetrisGrid.removeLines(lines);
     
     // Add score (10 points per line)
-    Globals::setScore(Globals::getScore() + lines.size() * 10);
     
     // Spawn new piece
     spawnNewPiece();
@@ -288,7 +259,8 @@ void GameScene::updateGravity() {
             // Check for lines and clear them
             auto lines = tetrisGrid.findCompleteLines();
             if (!lines.empty()) {
-                removeLines(lines);
+                tetrisGrid.removeLines(lines);
+                Globals::setScore(Globals::getScore() + lines.size() * 10);
             } else {
                 spawnNewPiece();
             }
