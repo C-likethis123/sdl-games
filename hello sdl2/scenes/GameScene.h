@@ -56,6 +56,7 @@ private:
     TetraType getRandomTetraType();
     bool canMove(int deltaX, int deltaY);
     bool rotateIfValid(bool clockwise);
+    void hardDrop();
     void lockPiece();
     void checkAndClearLines();
     std::vector<int> findCompleteLines();

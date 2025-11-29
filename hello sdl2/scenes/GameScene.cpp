@@ -116,9 +116,12 @@ void GameScene::handleEvent(SDL_Event& e) {
                 break;
                 
             case SDLK_UP:
-            case SDLK_SPACE:
                 // Rotate clockwise
                 rotateIfValid(true);
+                break;
+                
+            case SDLK_SPACE:
+                hardDrop();
                 break;
                 
             case SDLK_Z:
@@ -191,6 +194,24 @@ bool GameScene::rotateIfValid(bool clockwise) {
     }
     
     return valid;
+}
+
+void GameScene::hardDrop() {
+    if (!currentPiece || isClearing) return;
+    
+    // Calculate where the piece will land
+    int targetY = calculateGhostPieceY();
+    
+    // Move piece directly to the target position
+    while (currentPiece->getY() < targetY) {
+        currentPiece->moveDown();
+    }
+    
+    // Lock the piece immediately
+    lockPiece();
+    
+    // Reset gravity timer
+    lastMoveTime = SDL_GetTicks();
 }
 
 void GameScene::lockPiece() {
