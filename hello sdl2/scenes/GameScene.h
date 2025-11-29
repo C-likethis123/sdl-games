@@ -45,7 +45,7 @@ private:
     void spawnNewPiece();
     TetraType getRandomTetraType();
     bool canMove(int deltaX, int deltaY);
-    bool canRotate(bool clockwise);
+    bool rotateIfValid(bool clockwise);
     void lockPiece();
     void renderTetrisGrid();
     void renderNextPiecePreview();

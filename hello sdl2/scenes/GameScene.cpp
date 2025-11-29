@@ -75,16 +75,12 @@ void GameScene::handleEvent(SDL_Event& e) {
             case SDLK_UP:
             case SDLK_SPACE:
                 // Rotate clockwise
-                if (canRotate(true)) {
-                    currentPiece->rotateClockwise();
-                }
+                rotateIfValid(true);
                 break;
                 
             case SDLK_Z:
                 // Rotate counter-clockwise
-                if (canRotate(false)) {
-                    currentPiece->rotateCounterClockwise();
-                }
+                rotateIfValid(false);
                 break;
         }
     }
@@ -114,7 +110,7 @@ bool GameScene::canMove(int deltaX, int deltaY) {
     return true;
 }
 
-bool GameScene::canRotate(bool clockwise) {
+bool GameScene::rotateIfValid(bool clockwise) {
     if (!currentPiece) return false;
     
     // Temporarily rotate to check
