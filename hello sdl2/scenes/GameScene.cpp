@@ -7,10 +7,7 @@
 
 #include "GameScene.h"
 #include "../Globals.h"
-#include "../Colors.h"
-#include <format>
 #include <random>
-#include <sstream>
 
 GameScene::GameScene() 
     : lastMoveTime(0), 
@@ -201,7 +198,7 @@ void GameScene::hardDrop() {
     if (!currentPiece) return;
     
     // Calculate where the piece will land
-    int targetY = calculateGhostPieceY();
+    int targetY = ghostPieceRenderer.calculateDropPosition(currentPiece.get(), tetrisGrid);
     
     // Move piece directly to the target position
     while (currentPiece->getY() < targetY) {
@@ -216,14 +213,12 @@ void GameScene::hardDrop() {
     if (!lines.empty()) {
         tetrisGrid.removeLines(lines);
         Globals::setScore(Globals::getScore() + lines.size() * 10);
-
     }
     spawnNewPiece();
 
     // Reset gravity timer
     lastMoveTime = SDL_GetTicks();
 }
-// removeLines() moved to TetrisGrid
 
 void GameScene::updateLineClearAnimation() {
     // TODO: Animation logic needs to be properly refactored
@@ -267,81 +262,7 @@ void GameScene::updateGravity() {
     }
 }
 
-int GameScene::calculateGhostPieceY() {
-    if (!currentPiece) return 0;
-    
-    int ghostY = currentPiece->getY();
-    const auto& shape = currentPiece->getShape();
-    int currentX = currentPiece->getX();
-    
-    // Keep moving down until we can't anymore
-    while (true) {
-        bool canMoveDown = true;
-        
-        // Check each cell of the piece at the next position
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 4; col++) {
-                if (shape[row][col] == 1) {
-                    int x = currentX + col;
-                    int y = ghostY + row + 1;  // Check one position down
-                    
-                    // Check boundaries
-                    if (y >= tetrisGrid.getHeight()) {
-                        canMoveDown = false;
-                        break;
-                    }
-                    
-                    // Check collision with locked pieces
-                    if (y >= 0 && x >= 0 && x < tetrisGrid.getWidth() && tetrisGrid.isCellOccupied(x, y)) {
-                        canMoveDown = false;
-                        break;
-                    }
-                }
-            }
-            if (!canMoveDown) break;
-        }
-        
-        if (!canMoveDown) {
-            break;
-        }
-        
-        ghostY++;
-    }
-    
-    return ghostY;
-}
-
-void GameScene::renderGhostPiece() {
-    if (!currentPiece) return;
-    
-    SDL_Renderer* renderer = Globals::getRenderer();
-    int ghostY = calculateGhostPieceY();
-    
-    // Only render if ghost piece is different from current piece position
-    if (ghostY == currentPiece->getY()) {
-        return;
-    }
-    
-    // Get the current piece's shape and color
-    const auto& shape = currentPiece->getShape();
-    SDL_Color color = currentPiece->getColor();
-    
-    // Render ghost piece as outlined rectangles (not filled)
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 128);  // Semi-transparent
-    
-    for (int row = 0; row < 4; row++) {
-        for (int col = 0; col < 4; col++) {
-            if (shape[row][col] == 1) {
-                float x = tetrisGrid.getStartX() + (currentPiece->getX() + col) * tetrisGrid.getCellSize();
-                float y = tetrisGrid.getStartY() + (ghostY + row) * tetrisGrid.getCellSize();
-                
-                // Draw ghost piece
-                SDL_FRect rect{x + 2, y + 2, tetrisGrid.getCellSize() - 4, tetrisGrid.getCellSize() - 4};
-                SDL_RenderRect(renderer, &rect);
-            }
-        }
-    }
-}
+// calculateGhostPieceY() and renderGhostPiece() moved to GhostPieceRenderer component
 
 // renderScoreBox() moved to ScoreBox component
 
@@ -364,7 +285,7 @@ void GameScene::render() {
     tetrisGrid.render();
     
     // Render ghost piece (before rendering current piece so it appears behind)
-    renderGhostPiece();
+    ghostPieceRenderer.render(currentPiece.get(), tetrisGrid);
     
     // Render current piece
     if (currentPiece) {

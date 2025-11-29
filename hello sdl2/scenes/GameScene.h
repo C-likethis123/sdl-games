@@ -19,6 +19,7 @@
 #include "../TetrisGrid.h"
 #include "../ScoreBox.h"
 #include "../NextPiecePreview.h"
+#include "../GhostPieceRenderer.h"
 
 class GameScene : public Scene {
 public:
@@ -35,6 +36,7 @@ private:
     // UI components
     ScoreBox scoreBox;
     NextPiecePreview nextPiecePreview;
+    GhostPieceRenderer ghostPieceRenderer;
     
     // Tetris state
     std::unique_ptr<Tetra> currentPiece;
@@ -52,8 +54,6 @@ private:
     void hardDrop();
     void updateLineClearAnimation(); // TODO: Needs refactoring
     void updateGravity();
-    int calculateGhostPieceY();
-    void renderGhostPiece();
     
     LTexture background;
 };

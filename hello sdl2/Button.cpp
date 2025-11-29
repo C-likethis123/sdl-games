@@ -48,8 +48,7 @@ void Button::initialise() {
 }
 
 void Button::render() {
-    // Draw hover background if hovered and cell is empty
-    if (isHovered && text.empty()) {
+    if (isHovered) {
         SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::hoverBlue.r, Colors::hoverBlue.g, Colors::hoverBlue.b, Colors::hoverBlue.a);
     } else {
         SDL_SetRenderDrawColor(Globals::getRenderer(), Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a);

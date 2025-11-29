@@ -27,7 +27,7 @@ public:
     Tetra(TetraType type, int gridX, int gridY);
     
     // Rendering
-    void render(SDL_Renderer* renderer, float cellSize, float gridStartX, float gridStartY);
+    void render(SDL_Renderer* renderer, float cellSize, float gridStartX, float gridStartY) const;
     
     // Rotation
     void rotateClockwise();

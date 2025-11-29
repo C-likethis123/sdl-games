@@ -253,7 +253,7 @@ const std::vector<std::vector<int>>& Tetra::getShape() const {
     return getShapesForType()[rotation];
 }
 
-void Tetra::render(SDL_Renderer* renderer, float cellSize, float gridStartX, float gridStartY) {
+void Tetra::render(SDL_Renderer* renderer, float cellSize, float gridStartX, float gridStartY) const {
     const auto& shape = getShape();
     
     // Set color for this piece
