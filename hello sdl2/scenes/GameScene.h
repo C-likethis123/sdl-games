@@ -41,12 +41,24 @@ private:
     uint64_t lastMoveTime;
     static constexpr uint64_t MOVE_DELAY_MS = 1000;  // Auto-move down every 1s
     
+    // Line clearing state
+    bool isClearing;
+    std::vector<int> linesToClear;
+    uint64_t clearStartTime;
+    int blinkCount;
+    static constexpr uint64_t BLINK_INTERVAL_MS = 150;  // Blink every 150ms
+    static constexpr int TOTAL_BLINKS = 8;  // Blink 8 times before clearing
+    
     // Helper methods
     void spawnNewPiece();
     TetraType getRandomTetraType();
     bool canMove(int deltaX, int deltaY);
     bool rotateIfValid(bool clockwise);
     void lockPiece();
+    void checkAndClearLines();
+    std::vector<int> findCompleteLines();
+    void removeLines(const std::vector<int>& lines);
+    void updateLineClearAnimation();
     void renderTetrisGrid();
     void renderNextPiecePreview();
     void renderScoreBox();

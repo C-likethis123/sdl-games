@@ -12,7 +12,7 @@
 #include <random>
 #include <sstream>
 
-GameScene::GameScene() : lastMoveTime(0) {
+GameScene::GameScene() : lastMoveTime(0), isClearing(false), clearStartTime(0), blinkCount(0) {
     // Initialize Tetris grid with all empty cells
     tetrisGrid.resize(TETRIS_GRID_HEIGHT, std::vector<int>(TETRIS_GRID_WIDTH, 0));
     initialise();
@@ -161,11 +161,89 @@ void GameScene::lockPiece() {
         }
     }
     
-    // Spawn new piece
+    // Check for complete lines
+    checkAndClearLines();
+}
+
+void GameScene::checkAndClearLines() {
+    linesToClear = findCompleteLines();
+    
+    if (!linesToClear.empty()) {
+        // Start line clearing animation
+        isClearing = true;
+        clearStartTime = SDL_GetTicks();
+        blinkCount = 0;
+    } else {
+        // No lines to clear, spawn new piece immediately
+        spawnNewPiece();
+    }
+}
+
+std::vector<int> GameScene::findCompleteLines() {
+    std::vector<int> completeLines;
+    
+    for (int row = 0; row < TETRIS_GRID_HEIGHT; row++) {
+        bool isComplete = true;
+        for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
+            if (tetrisGrid[row][col] == 0) {
+                isComplete = false;
+                break;
+            }
+        }
+        if (isComplete) {
+            completeLines.push_back(row);
+        }
+    }
+    
+    return completeLines;
+}
+
+void GameScene::removeLines(const std::vector<int>& lines) {
+    // Remove lines from bottom to top to avoid index issues
+    for (auto it = lines.rbegin(); it != lines.rend(); ++it) {
+        int lineToRemove = *it;
+        
+        // Remove the line by shifting everything above it down
+        for (int row = lineToRemove; row > 0; row--) {
+            for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
+                tetrisGrid[row][col] = tetrisGrid[row - 1][col];
+            }
+        }
+        
+        // Clear the top row
+        for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
+            tetrisGrid[0][col] = 0;
+        }
+    }
+    
+    // Add score (10 points per line)
+    Globals::setScore(Globals::getScore() + lines.size() * 10);
+    
+    // Clear animation state and spawn new piece
+    isClearing = false;
+    linesToClear.clear();
     spawnNewPiece();
 }
 
+void GameScene::updateLineClearAnimation() {
+    if (!isClearing) return;
+    
+    uint64_t currentTime = SDL_GetTicks();
+    uint64_t elapsed = currentTime - clearStartTime;
+    
+    // Check if enough time has passed for next blink
+    int currentBlinkPhase = elapsed / BLINK_INTERVAL_MS;
+    
+    if (currentBlinkPhase >= TOTAL_BLINKS) {
+        // Animation complete, remove lines
+        removeLines(linesToClear);
+    }
+}
+
 void GameScene::updateGravity() {
+    // Don't update gravity while clearing lines
+    if (isClearing) return;
+    
     uint64_t currentTime = SDL_GetTicks();
     
     if (currentTime - lastMoveTime >= MOVE_DELAY_MS) {
@@ -207,22 +285,54 @@ void GameScene::renderTetrisGrid() {
     }
     
     // Draw locked pieces
+    // Calculate blink state for clearing animation
+    bool shouldShowClearing = true;
+    if (isClearing) {
+        uint64_t currentTime = SDL_GetTicks();
+        uint64_t elapsed = currentTime - clearStartTime;
+        int blinkPhase = (elapsed / BLINK_INTERVAL_MS) % 2;  // 0 or 1
+        shouldShowClearing = (blinkPhase == 0);  // Show on even phases, hide on odd
+    }
+    
     SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
     for (int row = 0; row < TETRIS_GRID_HEIGHT; row++) {
+        // Check if this row is being cleared
+        bool isLineClearing = false;
+        if (isClearing) {
+            for (int clearLine : linesToClear) {
+                if (clearLine == row) {
+                    isLineClearing = true;
+                    break;
+                }
+            }
+        }
+        
         for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
             if (tetrisGrid[row][col] == 1) {
+                // Skip rendering if this line is clearing and in "hidden" blink phase
+                if (isLineClearing && !shouldShowClearing) {
+                    continue;
+                }
+                
                 SDL_FRect cellRect = {
                     TETRIS_GRID_START_X + col * TETRIS_CELL_SIZE,
                     TETRIS_GRID_START_Y + row * TETRIS_CELL_SIZE,
                     TETRIS_CELL_SIZE,
                     TETRIS_CELL_SIZE
                 };
+                
+                // Use white color for clearing lines to highlight them
+                if (isLineClearing) {
+                    SDL_SetRenderDrawColor(renderer, Colors::white.r, Colors::white.g, Colors::white.b, Colors::white.a);
+                } else {
+                    SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
+                }
+                
                 SDL_RenderFillRect(renderer, &cellRect);
                 
                 // Draw border
                 SDL_SetRenderDrawColor(renderer, Colors::black.r, Colors::black.g, Colors::black.b, Colors::black.a);
                 SDL_RenderRect(renderer, &cellRect);
-                SDL_SetRenderDrawColor(renderer, Colors::lightGray.r, Colors::lightGray.g, Colors::lightGray.b, Colors::lightGray.a);
             }
         }
     }
@@ -275,7 +385,10 @@ void GameScene::renderNextPiecePreview() {
 }
 
 void GameScene::render() {
-    // Update gravity
+    // Update line clearing animation
+    updateLineClearAnimation();
+    
+    // Update gravity (only if not clearing)
     updateGravity();
     
     // Render next piece preview box
@@ -287,8 +400,8 @@ void GameScene::render() {
     // Render Tetris grid
     renderTetrisGrid();
     
-    // Render current piece
-    if (currentPiece) {
+    // Render current piece (only if not clearing lines)
+    if (currentPiece && !isClearing) {
         currentPiece->render(Globals::getRenderer(), TETRIS_CELL_SIZE, 
                             TETRIS_GRID_START_X, TETRIS_GRID_START_Y);
     }
