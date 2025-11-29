@@ -65,6 +65,19 @@ void TetrisGrid::removeLines(const std::vector<int>& lines) {
     }
 }
 
+void TetrisGrid::clear() {
+    // Clear all cells in the grid
+    for (int row = 0; row < TETRIS_GRID_HEIGHT; row++) {
+        for (int col = 0; col < TETRIS_GRID_WIDTH; col++) {
+            tetrisGrid[row][col] = 0;
+        }
+    }
+    
+    // Reset animation state
+    isClearing = false;
+    linesToClear.clear();
+}
+
 void TetrisGrid::render() {
     SDL_Renderer* renderer = Globals::getRenderer();
     

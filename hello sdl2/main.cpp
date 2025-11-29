@@ -3,15 +3,13 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include <vector>
 #include <memory>
+#include <string>
 
 #include "Globals.h"
 #include "Colors.h"
 #include "scenes/Scene.h"
-#include "scenes/InitialScene.h"
-#include "scenes/GameScene.h"
-#include "scenes/GameOverScene.h"
+#include "scenes/SceneFactory.h"
 
 /**
  
@@ -66,22 +64,24 @@ int main(int argc, char* args[]) {
     bool quit = false;
     SDL_Event e;
 
-    std::unordered_map<std::string, std::unique_ptr<Scene>> scenes;
-    scenes.emplace("initial", std::make_unique<InitialScene>());
-    scenes.emplace("next", std::make_unique<GameScene>());
-    scenes.emplace("gameover", std::make_unique<GameOverScene>());
-    
+    // Create the initial scene
+    std::unique_ptr<Scene> currentScene = SceneFactory::createScene(Globals::getSceneKey());
     std::string previousSceneKey = Globals::getSceneKey();
     
     while (!quit) {
         std::string currentSceneKey = Globals::getSceneKey();
         
-        Scene& scene = *scenes[currentSceneKey];
+        // Check if scene changed - create a new scene instance
+        if (currentSceneKey != previousSceneKey) {
+            currentScene = SceneFactory::createScene(currentSceneKey);
+            previousSceneKey = currentSceneKey;
+        }
+        
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
             } else {
-                scene.handleEvent(e);
+                currentScene->handleEvent(e);
             }
         }
          //Clear screen
@@ -89,7 +89,7 @@ int main(int argc, char* args[]) {
          SDL_RenderClear( Globals::getRenderer() );
          
          // Update actions and render again
-         scene.render();
+         currentScene->render();
          
          //Update screen
          SDL_RenderPresent( Globals::getRenderer() );

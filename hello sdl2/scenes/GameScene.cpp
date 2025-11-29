@@ -26,7 +26,8 @@ void GameScene::initialise() {
 }
 
 void GameScene::reset() {
-    // Reset game state TODO reset the grid
+    // Clear the grid
+    tetrisGrid.clear();
     
     // Reset score
     Globals::setScore(0);
@@ -53,8 +54,15 @@ void GameScene::spawnNewPiece() {
         
         // Check if the newly spawned piece collides with existing pieces (game over)
         if (checkGameOver()) {
+            // Clear the game state before transitioning
+            currentPiece.reset();
+            nextPiece.reset();
+
+            // Clear the grid
+            tetrisGrid.clear();
+            
+            // Transition to game over scene
             Globals::setScene("gameover");
-            reset();
             return;
         }
     }
@@ -233,8 +241,8 @@ void GameScene::updateLineClearAnimation() {
 }
 
 void GameScene::updateGravity() {
-    // TODO: isClearing logic needs to be refactored
-    // if (isClearing) return;
+    // Don't update if no current piece (e.g., during game over)
+    if (!currentPiece) return;
     
     uint64_t currentTime = SDL_GetTicks();
     
@@ -250,9 +258,8 @@ void GameScene::updateGravity() {
             if (!lines.empty()) {
                 tetrisGrid.removeLines(lines);
                 Globals::setScore(Globals::getScore() + lines.size() * 10);
-            } else {
-                spawnNewPiece();
             }
+            spawnNewPiece();
         }
         lastMoveTime = currentTime;
     }

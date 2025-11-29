@@ -22,6 +22,7 @@ public:
     std::vector<int> findCompleteLines();
     void removeLines(const std::vector<int>& lines);
     void render();
+    void clear();
     
     // Getters for grid dimensions
     int getWidth() const { return TETRIS_GRID_WIDTH; }
